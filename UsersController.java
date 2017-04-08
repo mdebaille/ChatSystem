@@ -35,6 +35,7 @@ public class UsersController{
 		listPseudo.addListDataListener(listDataListeners);
 		listCompteurs = new ConcurrentHashMap<InetAddress,Integer>();
 		this.chatSystem = chatSystem;
+		
 		TimerTask update = new TimerTask() {
             public void run() {
             	Iterator<Entry<InetAddress,Integer>> it = listCompteurs.entrySet().iterator();
@@ -54,11 +55,13 @@ public class UsersController{
             	}
             }
         };
+        
         TimerTask send = new TimerTask() {
             public void run() {
             	chatSystem.sendMessageUser();
             }
         };
+        
         timer = new Timer();
         timer.schedule(update, 3*delay, 3*delay);
         timer.schedule(send, delay, delay);
@@ -108,6 +111,7 @@ public class UsersController{
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
     	listPseudo.removeElement(info.getPseudo());
     	listUser.remove(info);
+    	chatSystem.removeChannel(info);
 	}
 	
 	public void addUser(InfoUser info){

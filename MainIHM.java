@@ -109,6 +109,7 @@ public void changeFrame(){
 	
 	private void bDisconnectActionPerformed(ActionEvent e){
 		chatsystem.Disconnect();
+		//chatsystem.testComm();
 	}
 	
 	public void valueChanged(ListSelectionEvent evt) { 

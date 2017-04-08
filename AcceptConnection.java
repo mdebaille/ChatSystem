@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -16,9 +17,12 @@ public class AcceptConnection extends Thread{
 		while(true){
 			try{
 				Socket socket = serverSocket.accept();
-				//chatsystem.newConnection(socket);
+				if(!chatsystem.existChatController(socket.getInetAddress())){	// peut etre que ce if n'est pas necessaire
+					chatsystem.addChannel(socket);
+					System.out.println("Connection acceptée.");
+				}
 			}catch(IOException e){
-				System.out.println(e.getMessage());
+				System.out.println("AcceptConnection: " + e.getMessage());
 			}
 		}
 	}
