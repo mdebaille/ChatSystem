@@ -17,10 +17,8 @@ public class AcceptConnection extends Thread{
 		while(true){
 			try{
 				Socket socket = serverSocket.accept();
-				if(!chatsystem.existChatController(socket.getInetAddress())){	// peut etre que ce if n'est pas necessaire
-					chatsystem.addChannel(socket);
-					System.out.println("Connection acceptée.");
-				}
+				chatsystem.addChannel(socket);
+				System.out.println("Connection acceptÃ©e.");
 			}catch(IOException e){
 				System.out.println("AcceptConnection: " + e.getMessage());
 			}
