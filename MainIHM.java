@@ -36,7 +36,7 @@ public class MainIHM extends JFrame implements ListSelectionListener, ListDataLi
 	JLabel lUsername;
 	JLabel lMyUsername;
 	
-	UsersController usersController;
+	UsersModel usersModel;
 	JList<String> listUsers;
 	
 	Chatsystem chatsystem;
@@ -69,9 +69,9 @@ public class MainIHM extends JFrame implements ListSelectionListener, ListDataLi
 	}
 	
 	
-	public void setUsersController(UsersController uc){
-		this.usersController = uc;
-		listUsers = new JList <String>(usersController.getList());
+	public void setUsersController(UsersModel um){
+		this.usersModel = um;
+		listUsers = new JList <String>(usersModel.getList());
 		listUsers.addListSelectionListener(this);
 	}
 	

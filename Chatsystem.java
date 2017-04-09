@@ -47,7 +47,7 @@ public class Chatsystem{
 	private InetAddress group;
 	private MulticastSocket multicastSocket;
 	
-	private UsersController uc;
+	private UsersModel um;
 	private HashMap<InetAddress, ChatController> listChatController;
 	
 	boolean connected = false;
@@ -92,10 +92,10 @@ public class Chatsystem{
 	public void startChatsystem(String pseudo){
 		this.pseudo = pseudo;
 		
-		uc = new UsersController(this);
+		um = new UsersModel(this);
 		listChatController = new HashMap<InetAddress, ChatController>();
 		
-		mainIHM.setUsersController(uc);
+		mainIHM.setUsersController(um);
 		mainIHM.changeFrame();
 		connected = true;
 		//test();
@@ -109,7 +109,7 @@ public class Chatsystem{
 			acceptLoop.start();
 			
 			// Boucle infinie qui gere la reception des MessageUser emis en multicast et les passe à UsersController pour que la liste des users soit mise à jour
-			MulticastListener multicastListener = new MulticastListener(new DatagramSocket(this.portMulticast), uc);
+			MulticastListener multicastListener = new MulticastListener(new DatagramSocket(this.portMulticast), um);
 			multicastListener.start();
 			
 		}catch(IOException e){
@@ -233,7 +233,7 @@ public class Chatsystem{
             public void run() {
             	if(connected){
 	            	for (MessageUser m : list){
-	                	uc.receivedMessageUser(m);
+	                	um.receivedMessageUser(m);
 	            	}
             	}else{
             		timer.cancel();
@@ -247,7 +247,7 @@ public class Chatsystem{
             		try{
                 		String p = Integer.toString(10);
             			InetAddress i = InetAddress.getByName("1.1.1."+Integer.toString(10));
-            			uc.receivedMessageUser(new MessageUser(p,i,port,type));
+            			um.receivedMessageUser(new MessageUser(p,i,port,type));
             			}catch(UnknownHostException e){
             				System.out.println(e.getMessage());
             			}

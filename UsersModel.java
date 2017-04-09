@@ -17,7 +17,7 @@ import javax.swing.event.ListDataListener;
  * Met à jour sa liste de user et quand mise à jour -> ajouter dans liste de IHM principale (appel de addUser et removeUser)
  */
 
-public class UsersController{
+public class UsersModel{
 	
 	final int delay = 2000; //2s
 	ArrayList<InfoUser> listUser;
@@ -28,7 +28,7 @@ public class UsersController{
 	
 	DefaultListModel <String> listPseudo;
 	
-	public UsersController(final Chatsystem chatSystem){
+	public UsersModel(final Chatsystem chatSystem){
 		listUser = new ArrayList<InfoUser>();
 		listPseudo = new DefaultListModel<String>();
 		listDataListeners = chatSystem.getMainIHM();

@@ -6,11 +6,11 @@ import java.net.InetAddress;
 public class MulticastListener extends Thread{
 	
 	private DatagramSocket socket;
-	private UsersController usersController;
+	private UsersModel usersModel;
 	
-	public MulticastListener(DatagramSocket socket, UsersController uc){
+	public MulticastListener(DatagramSocket socket, UsersModel um){
 		this.socket = socket;
-		this.usersController = uc;
+		this.usersModel = um;
 	}
 	
 	public void run(){
@@ -20,7 +20,7 @@ public class MulticastListener extends Thread{
 			try{
 				socket.receive(packet);	// bloque le thread, attend la reception d'un packet datagramme
 				MessageUser msgReceived = new MessageUser("pseudo", InetAddress.getByName("1.1.1.1"), 1, MessageUser.typeConnect.CONNECTED); // deserialiser le contenu du datagram packet recu
-				usersController.receivedMessageUser(msgReceived); // mise a jour de la liste des users suivant le message
+				usersModel.receivedMessageUser(msgReceived); // mise a jour de la liste des users suivant le message
 			}catch(IOException e){
 				System.out.println(e.getMessage());
 			}

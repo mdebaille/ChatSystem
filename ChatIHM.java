@@ -14,7 +14,6 @@ import javax.swing.*;
  * Fenêtre pour communiquer avec un utilisateur
  */
 
-
 public class ChatIHM {
 
 	String destUsername;
