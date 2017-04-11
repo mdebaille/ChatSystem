@@ -1,15 +1,10 @@
 import java.net.InetAddress;
 import java.util.Map.Entry;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.swing.DefaultListModel;
-import javax.swing.event.ListDataListener;
-
 
 
 /*
@@ -21,20 +16,16 @@ public class UsersModel{
 	
 	final int delay = 2000; //2s
 	ArrayList<InfoUser> listUser;
-	ListDataListener listDataListeners;
+	MainIHM ihm;
 	ConcurrentHashMap<InetAddress, Integer> listCompteurs;
 	Timer timer;
 	Chatsystem chatSystem;
 	
-	DefaultListModel <String> listPseudo;
-	
 	public UsersModel(final Chatsystem chatSystem){
 		listUser = new ArrayList<InfoUser>();
-		listPseudo = new DefaultListModel<String>();
-		listDataListeners = chatSystem.getMainIHM();
-		listPseudo.addListDataListener(listDataListeners);
-		listCompteurs = new ConcurrentHashMap<InetAddress,Integer>();
 		this.chatSystem = chatSystem;
+		this.ihm = chatSystem.getMainIHM();
+		listCompteurs = new ConcurrentHashMap<InetAddress, Integer>();
 		
 		TimerTask update = new TimerTask() {
             public void run() {
@@ -109,18 +100,14 @@ public class UsersModel{
 		    }
 		}
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
-    	listPseudo.removeElement(info.getPseudo());
+    	ihm.removeUser(info.getPseudo());
     	listUser.remove(info);
     	chatSystem.removeChannel(info);
 	}
 	
 	public void addUser(InfoUser info){
 		listUser.add(info);
-		listPseudo.addElement(info.getPseudo());
-	}
-	
-	public DefaultListModel<String> getList(){
-		return listPseudo;
+		ihm.addUser(info.getPseudo());
 	}
 	
 }

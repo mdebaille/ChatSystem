@@ -3,25 +3,19 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Map.Entry;
 
 
 /* 
@@ -95,10 +89,9 @@ public class Chatsystem{
 		um = new UsersModel(this);
 		listChatController = new HashMap<InetAddress, ChatController>();
 		
-		mainIHM.setUsersController(um);
 		mainIHM.changeFrame();
 		connected = true;
-		//test();
+		testIHM();
 		try{
 			multicastSocket = new MulticastSocket(portMulticast);
 			multicastSocket.joinGroup(group);
@@ -212,10 +205,9 @@ public class Chatsystem{
 		}
 	}
 	
-	public void test (){
+	public void testIHM (){
 		String pseudo;
 		InetAddress IP;
-		String statut ="";
 		final int port=10;
 		final MessageUser.typeConnect type = MessageUser.typeConnect.CONNECTED;
 		final ArrayList <MessageUser> list = new ArrayList<>();

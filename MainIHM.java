@@ -1,18 +1,8 @@
 import java.awt.GridLayout; 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.*;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 
 /*
@@ -25,7 +15,7 @@ import javax.swing.event.ListSelectionListener;
 
 
 
-public class MainIHM extends JFrame implements ListSelectionListener, ListDataListener{
+public class MainIHM extends JFrame {
 
 	private JButton bConnect;
 	private JTextArea taUsername;
@@ -36,13 +26,17 @@ public class MainIHM extends JFrame implements ListSelectionListener, ListDataLi
 	JLabel lUsername;
 	JLabel lMyUsername;
 	
-	UsersModel usersModel;
-	JList<String> listUsers;
-	
 	Chatsystem chatsystem;
+	
+	//private ArrayList<String> listUsers;
+	 DefaultListModel<String> listUsers;
+	 JList<String> jlist;
 	
 	public MainIHM(Chatsystem chatsystem){
 		this.chatsystem = chatsystem;
+		//listUsers = new ArrayList<>();
+		listUsers = new DefaultListModel<String>();
+		jlist = new JList<String>(listUsers);
 		initComponents();
 	}
 	
@@ -69,16 +63,13 @@ public class MainIHM extends JFrame implements ListSelectionListener, ListDataLi
 	}
 	
 	
-	public void setUsersController(UsersModel um){
-		this.usersModel = um;
-		listUsers = new JList <String>(usersModel.getList());
-		listUsers.addListSelectionListener(this);
-	}
-	
 public void changeFrame(){
 		
 		this.setVisible(false);
-		paneList = new JScrollPane(listUsers);
+		panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		//paneList = new JScrollPane(jlist);
+		paneList = new JScrollPane(panel);
 		lMyUsername = new JLabel(myUsername);
 		bDisconnect = new JButton("Disconnect");
 		
@@ -88,6 +79,7 @@ public void changeFrame(){
 		
 		this.setLayout(new GridLayout(3, 1));
 		this.add(lUsername);
+		//this.add(paneList);
 		this.add(paneList);
 		this.add(bDisconnect);
 		
@@ -112,20 +104,23 @@ public void changeFrame(){
 		//chatsystem.testComm();
 	}
 	
-	public void valueChanged(ListSelectionEvent evt) { 
-		 //etiquette.setText((String)liste.getSelectedValue());
+	public void addUser(String pseudo){
+		//listUsers.addElement(pseudo);
+		JButton name = new JButton(pseudo);
+		panel.add(name);
+		panel.revalidate();
 	}
 	
-	
-	public void contentsChanged(ListDataEvent listDataEvent) {
-		System.out.println("modification");
+	public void removeUser(String pseudo){
+		for (int i=0; i<panel.getComponentCount(); i++){
+			JButton b = (JButton)panel.getComponent(i);
+			if(b.getText().equals(pseudo)){
+				System.out.println("IHM : suppression de " + pseudo);
+				panel.remove(i);
+			}
+		}
+		panel.revalidate();
+		panel.repaint();
 	}
-	public void intervalAdded(ListDataEvent listDataEvent) {
-		System.out.println("ajout");
-	}
-	public void intervalRemoved(ListDataEvent listDataEvent) {
-		System.out.println("suppression");
-	}
-	
 
 }
