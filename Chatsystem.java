@@ -147,6 +147,10 @@ public class Chatsystem{
 		return listChatController.containsKey(ip);
 	}
 	
+	public void openChat(String pseudo){
+		// à implémenter
+		// création d'un chatIHM
+	}
 
 	// Juste pour tester un peu le fonctionnement de AcceptConnection et de ChatController sur 2 machines differentes sans avoir ChatIHM.
 	// Pour tester, appeler cette methode au moment du clic sur le bouton disconnect par exemple, puis lancer le recepteur et ensuite l'emetteur

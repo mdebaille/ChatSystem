@@ -68,7 +68,6 @@ public void changeFrame(){
 		this.setVisible(false);
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		//paneList = new JScrollPane(jlist);
 		paneList = new JScrollPane(panel);
 		lMyUsername = new JLabel(myUsername);
 		bDisconnect = new JButton("Disconnect");
@@ -79,7 +78,6 @@ public void changeFrame(){
 		
 		this.setLayout(new GridLayout(3, 1));
 		this.add(lUsername);
-		//this.add(paneList);
 		this.add(paneList);
 		this.add(bDisconnect);
 		
@@ -93,6 +91,28 @@ public void changeFrame(){
 	    });
 	}
 	
+	public void addUser(String pseudo){
+		JButton name = new JButton(pseudo);
+		name.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+	    		clickUser(e);
+	    	}
+		});
+		panel.add(name);
+		panel.revalidate();
+		panel.repaint();
+	}
+	
+	public void removeUser(String pseudo){
+		for (int i=0; i<panel.getComponentCount(); i++){
+			JButton b = (JButton)panel.getComponent(i);
+			if(b.getText().equals(pseudo)){
+				panel.remove(i);
+			}
+		}
+		panel.revalidate();
+		panel.repaint();
+	}
 
 	private void bConnectActionPerformed(ActionEvent e){
 		myUsername = taUsername.getText();
@@ -104,23 +124,8 @@ public void changeFrame(){
 		//chatsystem.testComm();
 	}
 	
-	public void addUser(String pseudo){
-		//listUsers.addElement(pseudo);
-		JButton name = new JButton(pseudo);
-		panel.add(name);
-		panel.revalidate();
+	private void clickUser(ActionEvent e){
+		JButton b = (JButton) e.getSource();
+		chatsystem.openChat(b.getText());
 	}
-	
-	public void removeUser(String pseudo){
-		for (int i=0; i<panel.getComponentCount(); i++){
-			JButton b = (JButton)panel.getComponent(i);
-			if(b.getText().equals(pseudo)){
-				System.out.println("IHM : suppression de " + pseudo);
-				panel.remove(i);
-			}
-		}
-		panel.revalidate();
-		panel.repaint();
-	}
-
 }
