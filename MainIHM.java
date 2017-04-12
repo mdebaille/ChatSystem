@@ -1,55 +1,60 @@
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout; 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 
 /*
- * Gestion de la Jlist en fonction du modèle dans UsersController
- * Ouverture de fenetre qd on clique sur un utilisateur
  * notification qd message reçu d'un certain user
  */
 
 
-
-
-
 public class MainIHM extends JFrame {
-
-	private JButton bConnect;
-	private JTextArea taUsername;
+	
+	JPanel pInputUsername;
+	JPanel pConnect;
 	JPanel panel;
 	JScrollPane paneList;
-	private JButton bDisconnect;
+	
+	JTextArea taUsername;
+	
 	String myUsername;
 	JLabel lUsername;
 	JLabel lMyUsername;
 	
 	Chatsystem chatsystem;
 	
-	//private ArrayList<String> listUsers;
-	 DefaultListModel<String> listUsers;
-	 JList<String> jlist;
-	
 	public MainIHM(Chatsystem chatsystem){
 		this.chatsystem = chatsystem;
-		//listUsers = new ArrayList<>();
-		listUsers = new DefaultListModel<String>();
-		jlist = new JList<String>(listUsers);
 		initComponents();
 	}
 	
 	private void initComponents(){
 		
-		lUsername = new JLabel("Username: ");
-		bConnect = new JButton("Connect");
-		taUsername = new JTextArea(1,15);
+		this.setTitle("Chat System");
 		
-		this.setLayout(new GridLayout(1, 3));
-		this.add("1", lUsername);
-		this.add("2", taUsername);
-		this.add("3", bConnect);
+		pInputUsername = new JPanel();
+		pInputUsername.setLayout(new BoxLayout(pInputUsername, BoxLayout.X_AXIS));
+		pInputUsername.setBorder(new EmptyBorder(20, 20, 20, 20));	
+		lUsername = new JLabel("Username: ");
+		lUsername.setBorder(new EmptyBorder(0,10,0,10));
+		taUsername = new JTextArea(1,15);
+		pInputUsername.add(lUsername);
+		pInputUsername.add(taUsername);
+		
+		pConnect = new JPanel(new BorderLayout());
+		pConnect.setBorder(new EmptyBorder(20, 60, 20, 60));
+		JButton bConnect = new JButton("Connect");
+		pConnect.add(bConnect, BorderLayout.CENTER);
+		
+		
+		this.setLayout(new GridLayout(2, 1));
+		this.add("1", pInputUsername);
+		this.add("2", pConnect);
 		
 		this.pack();
 		this.setVisible(true);
@@ -70,11 +75,10 @@ public void changeFrame(){
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		paneList = new JScrollPane(panel);
 		lMyUsername = new JLabel(myUsername);
-		bDisconnect = new JButton("Disconnect");
+		JButton bDisconnect = new JButton("Disconnect");
 		
-		this.remove(lUsername);
-		this.remove(taUsername);
-		this.remove(bConnect);
+		this.remove(pInputUsername);
+		this.remove(pConnect);
 		
 		this.setLayout(new GridLayout(3, 1));
 		this.add(lUsername);
