@@ -1,5 +1,8 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout; 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,21 +18,21 @@ import javax.swing.border.EmptyBorder;
 
 public class MainIHM extends JFrame {
 	
+	String myUsername;
+	
 	JPanel pInputUsername;
 	JPanel pConnect;
-	JPanel panel;
-	JScrollPane paneList;
+	JPanel pList;
 	
 	JTextArea taUsername;
 	
-	String myUsername;
-	JLabel lUsername;
-	JLabel lMyUsername;
-	
 	Chatsystem chatsystem;
+	
+	int nbUsers;
 	
 	public MainIHM(Chatsystem chatsystem){
 		this.chatsystem = chatsystem;
+		this.nbUsers = 0;
 		initComponents();
 	}
 	
@@ -40,14 +43,14 @@ public class MainIHM extends JFrame {
 		pInputUsername = new JPanel();
 		pInputUsername.setLayout(new BoxLayout(pInputUsername, BoxLayout.X_AXIS));
 		pInputUsername.setBorder(new EmptyBorder(20, 20, 20, 20));	
-		lUsername = new JLabel("Username: ");
+		JLabel lUsername = new JLabel("Username: ");
 		lUsername.setBorder(new EmptyBorder(0,10,0,10));
 		taUsername = new JTextArea(1,15);
 		pInputUsername.add(lUsername);
 		pInputUsername.add(taUsername);
 		
 		pConnect = new JPanel(new BorderLayout());
-		pConnect.setBorder(new EmptyBorder(20, 60, 20, 60));
+		pConnect.setBorder(new EmptyBorder(10, 60, 20, 60));
 		JButton bConnect = new JButton("Connect");
 		pConnect.add(bConnect, BorderLayout.CENTER);
 		
@@ -71,19 +74,42 @@ public class MainIHM extends JFrame {
 public void changeFrame(){
 		
 		this.setVisible(false);
-		panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		paneList = new JScrollPane(panel);
-		lMyUsername = new JLabel(myUsername);
+
+		GridBagConstraints cUsername = new GridBagConstraints();
+		cUsername.gridx = 0;
+		cUsername.gridy = 0;
+		cUsername.fill = GridBagConstraints.HORIZONTAL;
+		JLabel lMyUsername = new JLabel(myUsername, JLabel.CENTER);
+		lMyUsername.setForeground(Color.MAGENTA);
+		lMyUsername.setBorder(new EmptyBorder(20,20,20,20));
+
+		GridBagConstraints cList = new GridBagConstraints();
+		cList.gridx = 0;
+		cList.gridy = 1;
+		cList.fill = GridBagConstraints.HORIZONTAL;
+		pList = new JPanel();
+		//pList.setLayout(new BoxLayout(pList, BoxLayout.Y_AXIS));
+		pList.setLayout(new GridLayout(nbUsers,1));
+		JScrollPane scrollList = new JScrollPane(pList);
+		scrollList.setPreferredSize(new Dimension(100,200));
+		
+		GridBagConstraints cDisconnect = new GridBagConstraints();
+		cDisconnect.gridx = 0;
+		cDisconnect.gridy = 2;
+		cDisconnect.fill = GridBagConstraints.HORIZONTAL;
+		JPanel pDisconnect = new JPanel(new BorderLayout());
+		pDisconnect.setBorder(new EmptyBorder(20, 60, 20, 60));
 		JButton bDisconnect = new JButton("Disconnect");
+		pDisconnect.add(bDisconnect, BorderLayout.CENTER);
+		
 		
 		this.remove(pInputUsername);
 		this.remove(pConnect);
 		
-		this.setLayout(new GridLayout(3, 1));
-		this.add(lUsername);
-		this.add(paneList);
-		this.add(bDisconnect);
+		this.setLayout(new GridBagLayout());;
+		this.add(lMyUsername, cUsername);
+		this.add(scrollList, cList);
+		this.add(pDisconnect, cDisconnect);
 		
 		this.pack();
 		this.setVisible(true);
@@ -96,26 +122,31 @@ public void changeFrame(){
 	}
 	
 	public void addUser(String pseudo){
-		JButton name = new JButton(pseudo);
-		name.addActionListener(new ActionListener(){
+		JButton bName = new JButton(pseudo);
+		bName.setBackground(Color.white);
+		bName.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 	    		clickUser(e);
 	    	}
 		});
-		panel.add(name);
-		panel.revalidate();
-		panel.repaint();
+		nbUsers++;
+		pList.setLayout(new GridLayout(nbUsers,1));
+		pList.add(bName);
+		pList.revalidate();
+		pList.repaint();
 	}
 	
 	public void removeUser(String pseudo){
-		for (int i=0; i<panel.getComponentCount(); i++){
-			JButton b = (JButton)panel.getComponent(i);
+		nbUsers--;
+		pList.setLayout(new GridLayout(nbUsers,1));
+		for (int i=0; i<pList.getComponentCount(); i++){
+			JButton b = (JButton)pList.getComponent(i);
 			if(b.getText().equals(pseudo)){
-				panel.remove(i);
+				pList.remove(i);
 			}
 		}
-		panel.revalidate();
-		panel.repaint();
+		pList.revalidate();
+		pList.repaint();
 	}
 
 	private void bConnectActionPerformed(ActionEvent e){
