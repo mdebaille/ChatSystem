@@ -38,10 +38,8 @@ public class ChatController {
 
 	private BufferedWriter writer;
 	private BufferedReader reader;
-	//private ListenSocket ls;
 		
 	public ChatController(BufferedReader reader, BufferedWriter writer){
-		//this.ls = ls;
 		this.reader = reader;
 		this.writer = writer;
 	}

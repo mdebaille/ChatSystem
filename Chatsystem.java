@@ -148,8 +148,15 @@ public class Chatsystem{
 	}
 	
 	public void openChat(String pseudo){
-		// à implémenter
-		// création d'un chatIHM
+		
+		ChatIHM cIHM = new ChatIHM(pseudo);
+		/*
+		 *  => creer le socket qui permet de passer le accept() du destinataire, seulement si le ChatController associe à ce destinataire n'existe pas deja
+		 *     (c'est a dire premiere connexion)
+		 *   		Socket socket = new Socket(ipDest, portDest);
+		 *   		chatSystem.addChannel(socket);
+		 *     Ou bien creaton du socket direct apres ajout du user dans la liste ???
+		 */
 	}
 
 	// Juste pour tester un peu le fonctionnement de AcceptConnection et de ChatController sur 2 machines differentes sans avoir ChatIHM.

@@ -88,7 +88,6 @@ public void changeFrame(){
 		cList.gridy = 1;
 		cList.fill = GridBagConstraints.HORIZONTAL;
 		pList = new JPanel();
-		//pList.setLayout(new BoxLayout(pList, BoxLayout.Y_AXIS));
 		pList.setLayout(new GridLayout(nbUsers,1));
 		JScrollPane scrollList = new JScrollPane(pList);
 		scrollList.setPreferredSize(new Dimension(100,200));
