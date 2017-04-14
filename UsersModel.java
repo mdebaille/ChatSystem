@@ -110,4 +110,13 @@ public class UsersModel{
 		ihm.addUser(info.getPseudo());
 	}
 	
+	public InfoUser findInfo(String pseudo){
+		InfoUser info = null;
+		for(InfoUser i : listUser){
+			if (i.getPseudo().equals(pseudo)){
+				info = i;
+			}
+		}
+		return info;
+	}
 }

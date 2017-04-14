@@ -14,8 +14,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map.Entry;
 
 
 /* 
@@ -115,7 +117,7 @@ public class Chatsystem{
 		connected = false;
 	}
 	
-	public void addChannel(Socket socketDest){
+	public ChatController addChannel(Socket socketDest){
 		try{
 			InetAddress ipDest= socketDest.getInetAddress();
 			
@@ -130,6 +132,7 @@ public class Chatsystem{
 			
 			ChatController newChatController = new ChatController(bReader, bWriter);
 			listChatController.put(ipDest, newChatController);
+			return newChatController;
 
 		}catch(UnknownHostException e){
 			System.out.println("Erreur de résolution d'adresse serveur");
@@ -137,6 +140,8 @@ public class Chatsystem{
 			System.out.println("Client: Erreur lors de la création du socket");
 			System.out.println(e.getMessage());
 		}
+		return null;
+		
 	}
 	
 	public void removeChannel(InfoUser infoDest){
@@ -148,8 +153,15 @@ public class Chatsystem{
 	}
 	
 	public void openChat(String pseudo){
+		try{
+			InfoUser info = um.findInfo(pseudo);
+			Socket socket = new Socket(info.getIP(), info.getPort());
+			ChatController cc = this.addChannel(socket);
+			ChatIHM cIHM = new ChatIHM(pseudo, cc);
+		}catch(IOException e){
+			System.out.println(e.getMessage());
+		}
 		
-		ChatIHM cIHM = new ChatIHM(pseudo);
 		/*
 		 *  => creer le socket qui permet de passer le accept() du destinataire, seulement si le ChatController associe � ce destinataire n'existe pas deja
 		 *     (c'est a dire premiere connexion)

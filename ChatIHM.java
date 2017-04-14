@@ -29,11 +29,17 @@ import javax.swing.border.EmptyBorder;
 public class ChatIHM extends JFrame{
 
 	String destPseudo;
+	String myPseudo;
+	
+	ChatController chatController;
+	
 	JTextArea taSend;
 	JTextArea taReceived;
 	
-	public ChatIHM(String pseudo){
-		this.destPseudo = pseudo;
+	public ChatIHM(String destPseudo, ChatController chatController){
+		System.out.println("création du chatIHM");
+		this.destPseudo = destPseudo;
+		this.chatController = chatController;
 		initComponents();
 	}
 
@@ -102,6 +108,9 @@ public class ChatIHM extends JFrame{
 	}
 		
 	public void bSendActionPerformed(ActionEvent e){
+		//System.out.println(chatController);
+		//chatController.sendMessage(taSend.getText());
+		//taSend.setText("");
 		
 	}
 }
