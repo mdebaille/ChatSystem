@@ -1,6 +1,7 @@
 import java.net.InetAddress;
 import java.util.Map.Entry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -15,14 +16,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UsersModel{
 	
 	final int delay = 2000; //2s
-	ArrayList<InfoUser> listUser;
+	//ArrayList<InfoUser> listUser;
+	HashMap<InetAddress, InfoUser> listUser;
 	MainIHM ihm;
 	ConcurrentHashMap<InetAddress, Integer> listCompteurs;
 	Timer timer;
 	Chatsystem chatSystem;
 	
 	public UsersModel(final Chatsystem chatSystem){
-		listUser = new ArrayList<InfoUser>();
+		//listUser = new ArrayList<InfoUser>();
+		listUser = new HashMap<InetAddress, InfoUser>();
 		this.chatSystem = chatSystem;
 		this.ihm = chatSystem.getMainIHM();
 		listCompteurs = new ConcurrentHashMap<InetAddress, Integer>();
@@ -59,12 +62,13 @@ public class UsersModel{
 	}
 	
 	public boolean existInList(InetAddress IP){
-		for(InfoUser info : listUser){
+		/*for(InfoUser info : listUser){
 			if(info.getIP().equals(IP)){
 				return true;
 			}
 		}
-		return false;
+		return false;*/
+		return listUser.containsKey(IP);
 	}
 	
 	public void receivedMessageUser(final MessageUser mess){
@@ -89,7 +93,7 @@ public class UsersModel{
 	}
 	
 	public void removeUser(InetAddress ip){
-		
+		/*
 		Iterator<InfoUser> iter = listUser.iterator();
 		Boolean found = false;
 		InfoUser info = null;
@@ -98,25 +102,20 @@ public class UsersModel{
 		    if (info.getIP().equals(ip)){
 		    	found = true;
 		    }
-		}
+		}*/
+		InfoUser info = listUser.remove(ip);
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
     	ihm.removeUser(info.getPseudo());
-    	listUser.remove(info);
     	chatSystem.removeChannel(info);
 	}
 	
 	public void addUser(InfoUser info){
-		listUser.add(info);
-		ihm.addUser(info.getPseudo());
+		listUser.put(info.getIP(), info);
+		ihm.addUser(info);
 	}
 	
-	public InfoUser findInfo(String pseudo){
-		InfoUser info = null;
-		for(InfoUser i : listUser){
-			if (i.getPseudo().equals(pseudo)){
-				info = i;
-			}
-		}
-		return info;
+	public InfoUser getUser(InetAddress ip){
+		return listUser.get(ip);
 	}
+	
 }

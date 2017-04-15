@@ -14,10 +14,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Map.Entry;
 
 
 /* 
@@ -48,24 +46,29 @@ public class Chatsystem{
 	
 	boolean connected = false;
 	
-	static String role = "e"; // pour testComm(), pas du tout important, a supprimer plus tard
+	// pour testComm(), pas du tout important, a supprimer plus tard
+	static String addressDest;
+	static int portServerDest;
+	static int myPortServer;
 	
 	public static void main(String[] args) {
 		Chatsystem chatSystem = new Chatsystem();
 		
 		// pour tetComm()
-		if(args.length > 0){
-			role = args[0];
+		if(args.length >= 3){
+			addressDest = args[0];
+			portServerDest = Integer.parseInt(args[1]);
+			myPortServer = Integer.parseInt(args[2]);
 		}
 	}
 	
 	public Chatsystem(){
 		try{
 			this.address = InetAddress.getByName("localhost");
-			this.portServSocket = 17000;
+			this.portServSocket = 17001;
 			
 			this.portMulticast = 49150;	// valeur a definir
-			group = InetAddress.getByName("228.5.6.7"); // valeur a definir
+			group = InetAddress.getByName("228.5.6.7"); // valeur adefinir
 		
 		}catch(IOException e){
 			System.out.println(e.getMessage());
@@ -93,7 +96,8 @@ public class Chatsystem{
 		
 		mainIHM.changeFrame();
 		connected = true;
-		testIHM();
+		//testIHM();
+		
 		try{
 			multicastSocket = new MulticastSocket(portMulticast);
 			multicastSocket.joinGroup(group);
@@ -103,14 +107,15 @@ public class Chatsystem{
 			AcceptConnection acceptLoop = new AcceptConnection(servSocket, this);
 			acceptLoop.start();
 			
-			// Boucle infinie qui gere la reception des MessageUser emis en multicast et les passe à UsersController pour que la liste des users soit mise à jour
+			// Boucle infinie qui gere la reception des MessageUser emis en multicast et les passe à¡•sersModel pour que la liste des users soit mise à¡ªour
 			MulticastListener multicastListener = new MulticastListener(new DatagramSocket(this.portMulticast), um);
 			multicastListener.start();
 			
 		}catch(IOException e){
 			System.out.println("Chatsystem: " + e.getMessage());
 		}
-
+		
+		testComm();
 	}
 	
 	public void Disconnect(){
@@ -132,8 +137,8 @@ public class Chatsystem{
 			
 			ChatController newChatController = new ChatController(bReader, bWriter);
 			listChatController.put(ipDest, newChatController);
-			return newChatController;
 
+			return newChatController;
 		}catch(UnknownHostException e){
 			System.out.println("Erreur de rÃ©solution d'adresse serveur");
 		}catch(IOException e){
@@ -141,7 +146,6 @@ public class Chatsystem{
 			System.out.println(e.getMessage());
 		}
 		return null;
-		
 	}
 	
 	public void removeChannel(InfoUser infoDest){
@@ -152,79 +156,31 @@ public class Chatsystem{
 		return listChatController.containsKey(ip);
 	}
 	
-	public void openChat(String pseudo){
+	public void openChat(String ipAddress){
 		try{
-			InfoUser info = um.findInfo(pseudo);
-			Socket socket = new Socket(info.getIP(), info.getPort());
-			ChatController cc = this.addChannel(socket);
-			ChatIHM cIHM = new ChatIHM(pseudo, cc);
+			InetAddress ip = InetAddress.getByName(ipAddress);
+			InfoUser dest = um.getUser(ip);
+			
+			if(!existChatController(ip)){
+				Socket socket = new Socket(ip, dest.getPort());
+				this.addChannel(socket);
+			}
+			
+			ChatIHM cIHM = new ChatIHM(pseudo, dest.getPseudo(), listChatController.get(ip));
 		}catch(IOException e){
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
-		
-		/*
-		 *  => creer le socket qui permet de passer le accept() du destinataire, seulement si le ChatController associe à ce destinataire n'existe pas deja
-		 *     (c'est a dire premiere connexion)
-		 *   		Socket socket = new Socket(ipDest, portDest);
-		 *   		chatSystem.addChannel(socket);
-		 *     Ou bien creaton du socket direct apres ajout du user dans la liste ???
-		 */
 	}
 
-	// Juste pour tester un peu le fonctionnement de AcceptConnection et de ChatController sur 2 machines differentes sans avoir ChatIHM.
-	// Pour tester, appeler cette methode au moment du clic sur le bouton disconnect par exemple, puis lancer le recepteur et ensuite l'emetteur
+	// Teste l'envoi des messages entre ChatIHM sur 2 machines
 	public void testComm(){
-		if(role.equals("e")){
-			System.out.println("Emetteur:");
-			try{
-				InetAddress ipDest = InetAddress.getByName("192.168.0.25");
-				int portDest = 17001;
-				
-				System.out.println("---Demande de connexion---");
-				Socket socket = new Socket(ipDest, portDest);
-				
-				System.out.println("---Creation ChatController---");
-				addChannel(socket);
-				
-				System.out.println("---Envoi de messages---");
-				ChatController chatController = listChatController.get(ipDest);
-				for(int i = 0; i<5; i++){
-					System.out.println("Envoi: Hello" + i);
-					chatController.sendMessage("Hello" + i + "\n");
-					Thread.sleep(2000);
-				}
-				
-				System.out.println("---Reception de messages---");
-				String lastline;
-				for(int i = 0; i<5; i++){	
-					lastline = chatController.getLastLine(); // getLastLine() bloque tant qu'il n'y a pas de nouveau message à lire
-					System.out.println("Reçu: " + lastline); // affichage du message dans l'IHM
-				}
-			}catch(IOException e){
-				System.out.println(e.getMessage());
-			}catch(InterruptedException e){
-				System.out.println(e.getMessage());
-			}
-		}else{
-			System.out.println("Recepteur:");
-			try{
-				InetAddress ipEmetteur = InetAddress.getByName("192.168.0.27");
-			
-				System.out.println("---Reception de connexion---");
-				while(!existChatController(ipEmetteur)){}
-				ChatController chatController = listChatController.get(ipEmetteur);
-				
-				System.out.println("---Reception de messages---");
-				String lastline;
-				for(int i = 0; i<5; i++){	
-					lastline = chatController.getLastLine(); // getLastLine() bloque tant qu'il n'y a pas de nouveau message à lire
-					System.out.println("Reçu: " + lastline); // affichage du message dans l'IHM
-					System.out.println("Envoi: Salut" + i);
-					chatController.sendMessage("Salut" + i + "\n"); // envoi d'une réponse
-				}
-			}catch(IOException e){
-				System.out.println(e.getMessage());
-			}
+		try{
+			//mon ip: "192.168.0.27", autre machine: "192.168.0.25"
+			InetAddress ipDest = InetAddress.getByName(addressDest);
+			int portDest = portServerDest;
+			um.addUser(new InfoUser("Test", ipDest, portDest));
+		}catch(IOException e){
+			System.out.println(e.getMessage());
 		}
 	}
 	

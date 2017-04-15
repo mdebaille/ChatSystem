@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 
 
 /*
- * notification qd message reçu d'un certain user
+ * notification qd message reÃ§u d'un certain user
  */
 
 
@@ -120,9 +120,17 @@ public void changeFrame(){
 	    });
 	}
 	
-	public void addUser(String pseudo){
-		JButton bName = new JButton(pseudo);
+	public void addUser(InfoUser info){
+		JButton bName = new JButton(info.getPseudo());
 		bName.setBackground(Color.white);
+		
+		//Seule methode que j'ai trouve pour associer au bouton d'un user son adresse ip (sans l'afficher)
+		//Cette adresse ip sert à identifier de maniere unique le user qu'on selectionne pour se connecter a ce user la et pas un autre
+		//Sinon il y a risque de creer un chatcontroller associe a un user possedant le meme pseudo (si on se base uniquement sur le pseudo)
+		JLabel hiddenIP = new JLabel(info.getIP().getHostName()); //en realite c'est pas l'adresse ip mais le nom de la machine (mais bon c'est equivalent)
+		hiddenIP.setVisible(false);
+		bName.add(hiddenIP);
+		
 		bName.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 	    		clickUser(e);
@@ -155,11 +163,12 @@ public void changeFrame(){
 	
 	private void bDisconnectActionPerformed(ActionEvent e){
 		chatsystem.Disconnect();
-		//chatsystem.testComm();
 	}
 	
 	private void clickUser(ActionEvent e){
 		JButton b = (JButton) e.getSource();
-		chatsystem.openChat(b.getText());
+		JLabel ipLabel = (JLabel)b.getComponent(0);
+		chatsystem.openChat(ipLabel.getText());
+		System.out.println(ipLabel.getText());
 	}
 }
