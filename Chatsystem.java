@@ -49,16 +49,14 @@ public class Chatsystem{
 	// pour testComm(), pas du tout important, a supprimer plus tard
 	static String addressDest;
 	static int portServerDest;
-	static int myPortServer;
 	
 	public static void main(String[] args) {
 		Chatsystem chatSystem = new Chatsystem();
 		
 		// pour tetComm()
-		if(args.length >= 3){
+		if(args.length >= 2){
 			addressDest = args[0];
 			portServerDest = Integer.parseInt(args[1]);
-			myPortServer = Integer.parseInt(args[2]);
 		}
 	}
 	
@@ -172,7 +170,6 @@ public class Chatsystem{
 		}
 	}
 
-	// Teste l'envoi des messages entre ChatIHM sur 2 machines
 	public void testComm(){
 		try{
 			//mon ip: "192.168.0.27", autre machine: "192.168.0.25"
