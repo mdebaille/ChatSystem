@@ -127,7 +127,7 @@ public void changeFrame(){
 		//Seule methode que j'ai trouve pour associer au bouton d'un user son adresse ip (sans l'afficher)
 		//Cette adresse ip sert à identifier de maniere unique le user qu'on selectionne pour se connecter a ce user la et pas un autre
 		//Sinon il y a risque de creer un chatcontroller associe a un user possedant le meme pseudo (si on se base uniquement sur le pseudo)
-		JLabel hiddenIP = new JLabel(info.getIP().getHostName()); //en realite c'est pas l'adresse ip mais le nom de la machine (mais bon c'est equivalent)
+		JLabel hiddenIP = new JLabel(info.getIP().getHostName()); 
 		hiddenIP.setVisible(false);
 		bName.add(hiddenIP);
 		
