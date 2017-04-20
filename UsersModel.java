@@ -1,4 +1,5 @@
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,23 +73,25 @@ public class UsersModel{
 	}
 	
 	public void receivedMessageUser(final MessageUser mess){
-		if(mess.getEtat() == MessageUser.typeConnect.CONNECTED){
-			if(!existInList(mess.getIP())){
-				System.out.println("Ajout de l'utilisateur " + mess.getPseudo());
-				InfoUser info = new InfoUser(mess.getPseudo(), mess.getIP(), mess.getPort());
-				addUser(info);
-				listCompteurs.put(mess.getIP(), 1);
-			}else{
-				for(Entry<InetAddress, Integer> entry : listCompteurs.entrySet()){
-            		if(entry.getKey().equals(mess.getIP())){
-            			listCompteurs.put(entry.getKey(), entry.getValue()+1);
-            		}
-            	}
+		try {
+			if(!mess.getIP().equals(InetAddress.getLocalHost())){
+				if(mess.getEtat() == MessageUser.typeConnect.CONNECTED){
+					if(!existInList(mess.getIP())){
+						System.out.println("Ajout de l'utilisateur " + mess.getPseudo());
+						InfoUser info = new InfoUser(mess.getPseudo(), mess.getIP(), mess.getPort());
+						addUser(info);
+						listCompteurs.put(mess.getIP(), 1);
+					}else{
+			        	listCompteurs.put(mess.getIP(), listCompteurs.get(mess.getIP())+1);
+					}
+				}else{
+					if(existInList(mess.getIP())){
+						removeUser(mess.getIP());
+					}
+				}
 			}
-		}else{
-			if(existInList(mess.getIP())){
-				removeUser(mess.getIP());
-			}
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -105,7 +108,7 @@ public class UsersModel{
 		}*/
 		InfoUser info = listUser.remove(ip);
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
-    	ihm.removeUser(info.getPseudo());
+    	ihm.removeUser(info);
     	chatSystem.removeChannel(info);
 	}
 	

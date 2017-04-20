@@ -20,12 +20,12 @@ import javax.swing.border.EmptyBorder;
  *   Genre:
  *   	String lastline;
  *   	while(true){		 
- *   		lastline = chatController.getLastLine(); // getLastLine() bloque tant qu'il n'y a pas de nouveau message à lire
+ *   		lastline = chatController.getLastLine(); // getLastLine() bloque tant qu'il n'y a pas de nouveau message ï¿½ lire
  *   		afficher_le_msg_dans_IHM(lastline); 
  *   	}
  *   (quick note: Tel quel, si on ferme la fenetre de chat et qu'on la re-ouvre plus tard, le chat ne se rappellera pas des messages
- *   qui ont ete affiches avant la fermeture, on re-ouvre une chatIHM vierge à chaque fois. Il y aurait possibilite d'ajouter
- *   une memoire de messages à chaque chatcontroller pour pouvoir suivre les conversations en entier meme apres fermeture des chatIHM.)
+ *   qui ont ete affiches avant la fermeture, on re-ouvre une chatIHM vierge ï¿½ chaque fois. Il y aurait possibilite d'ajouter
+ *   une memoire de messages ï¿½ chaque chatcontroller pour pouvoir suivre les conversations en entier meme apres fermeture des chatIHM.)
  *   
  */
 
@@ -38,33 +38,33 @@ public class ChatIHM extends JFrame{
 	JTextArea taReceived;
 	
 	ChatController chatController;
-	SwingWorker worker;	// pour faire du traitement en parallele de l'interface swing (affichage des messages)
+	//SwingWorker worker;	// pour faire du traitement en parallele de l'interface swing (affichage des messages)
 	
-	public ChatIHM(String myPseudo, String destPseudo, ChatController chatController){
-		System.out.println("création du chatIHM");
+	public ChatIHM(String myPseudo, final String destPseudo, final ChatController chatController){
+		System.out.println("crï¿½ation du chatIHM");
 		this.myPseudo = myPseudo;
 		this.destPseudo = destPseudo;
 		this.chatController = chatController;
 		
 		// doInBackground() s'execute dans un background thread associe a l'interface swing
-		this.worker = new SwingWorker<Void, Void>() {
+		/*this.worker = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
 				String lastLine = ""; 
 				while(!isCancelled()){	
-					lastLine = chatController.getLastLine(); // getLastLine() bloque tant qu'il n'y a pas de nouveau message à lire 
+					lastLine = chatController.getLastLine(); // getLastLine() bloque tant qu'il n'y a pas de nouveau message ï¿½ lire 
 					if(!lastLine.equals("")){
-						 System.out.println("Reçu: " +  lastLine);
+						 System.out.println("Reï¿½u: " +  lastLine);
 						 ChatIHM.this.printMessage(destPseudo + ": " + lastLine + "\n");
 					}
 				}
 				return null;
 			}
-		};
+		};*/
 		
-		chatController.setChatActive(true);
 		initComponents();
-		worker.execute(); // lancement de doInBackground()
+		chatController.setChatActive(true);
+		//worker.execute(); // lancement de doInBackground()
 	}
 
 	private void initComponents(){
@@ -108,7 +108,7 @@ public class ChatIHM extends JFrame{
 		
 		bSend.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
-	    		bSendActionPerformed(e);
+	    		clickSend();
 	    	}
 		});
 		
@@ -133,31 +133,21 @@ public class ChatIHM extends JFrame{
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		       worker.cancel(true); // isCancelled() va maintenant retourner true
+		       //worker.cancel(true); // isCancelled() va maintenant retourner true
 		       chatController.setChatActive(false);
 		    }
 		});
 	}
 		
-	public void bSendActionPerformed(ActionEvent e){
-		/*try{
-			for(int i = 0; i<5; i++){
-				System.out.println("Envoi: Hello" + i);
-				chatController.sendMessage("Hello" + i + "\n");
-				printMessage(myPseudo + ": Hello" + i + "\n");
-				Thread.sleep(1000);
-			}
-		}catch(InterruptedException ex){
-			ex.printStackTrace();
-		}*/
-		//System.out.println(chatController);
-		chatController.sendMessage(taSend.getText() + "\n");
-		printMessage(myPseudo + ": " + taSend.getText() + "\n");
+	public void clickSend(){
+		chatController.sendMessage(taSend.getText());
+		//chatController.addMessage(taSend.getText() + "\n");
+		//printMessage(myPseudo + ": " + taSend.getText() + "\n");
 		taSend.setText("");
 	}
 	
 	protected void printMessage(String msg){
-		taReceived.append(msg);
+		taReceived.append(msg + "\n");
 	}
 	
 	

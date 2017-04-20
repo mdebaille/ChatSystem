@@ -49,23 +49,28 @@ public class Chatsystem{
 	// pour testComm(), pas du tout important, a supprimer plus tard
 	static String addressDest;
 	static int portServerDest;
+	static int myPortServer;
 	
 	public static void main(String[] args) {
-		Chatsystem chatSystem = new Chatsystem();
-		
-		// pour tetComm()
 		if(args.length >= 2){
-			addressDest = args[0];
-			portServerDest = Integer.parseInt(args[1]);
+			portServerDest = Integer.parseInt(args[0]);
+			myPortServer = Integer.parseInt(args[1]);
 		}
+		try {
+			addressDest = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Chatsystem chatSystem = new Chatsystem();
 	}
 	
 	public Chatsystem(){
 		try{
-			this.address = InetAddress.getByName("localhost");
-			this.portServSocket = 17001;
+			this.address = InetAddress.getLocalHost();
+			this.portServSocket = myPortServer;
 			
-			this.portMulticast = 49150;	// valeur a definir
+			this.portMulticast = 17002;	// valeur a definir
 			group = InetAddress.getByName("228.5.6.7"); // valeur adefinir
 		
 		}catch(IOException e){
@@ -78,7 +83,7 @@ public class Chatsystem{
 	public void sendMessageUser(){
 		try{
 			MessageUser mess = new MessageUser(pseudo, address, portServSocket, MessageUser.typeConnect.CONNECTED);
-			String m = ""; //Serialisation de mess
+			String m = serializeMessage(mess);
 			DatagramPacket packet = new DatagramPacket(m.getBytes(), m.length(), group, portMulticast);
 			multicastSocket.send(packet);
 		}catch (IOException e){
@@ -86,13 +91,20 @@ public class Chatsystem{
 		}
 	}
 	
+	public String serializeMessage(MessageUser messageUser){
+		return messageUser.getPseudo() + "#" 
+				+ messageUser.getIP().getHostAddress() + "#"
+				+ messageUser.getPort() + "#" 
+				+ messageUser.getEtat();
+	}
+	
+	
 	public void startChatsystem(String pseudo){
 		this.pseudo = pseudo;
 		
 		um = new UsersModel(this);
 		listChatController = new HashMap<InetAddress, ChatController>();
 		
-		mainIHM.changeFrame();
 		connected = true;
 		//testIHM();
 		
@@ -106,7 +118,7 @@ public class Chatsystem{
 			acceptLoop.start();
 			
 			// Boucle infinie qui gere la reception des MessageUser emis en multicast et les passe ࡕsersModel pour que la liste des users soit mise ࡪour
-			MulticastListener multicastListener = new MulticastListener(new DatagramSocket(this.portMulticast), um);
+			MulticastListener multicastListener = new MulticastListener(multicastSocket, um);
 			multicastListener.start();
 			
 		}catch(IOException e){
@@ -133,7 +145,7 @@ public class Chatsystem{
 			BufferedReader bReader = new BufferedReader(isr);
 			BufferedWriter bWriter = new BufferedWriter(osw);
 			
-			ChatController newChatController = new ChatController(bReader, bWriter);
+			ChatController newChatController = new ChatController(this, um.getUser(socketDest.getInetAddress()), bReader, bWriter, pseudo);
 			listChatController.put(ipDest, newChatController);
 
 			return newChatController;
@@ -157,19 +169,27 @@ public class Chatsystem{
 	public void openChat(String ipAddress){
 		try{
 			InetAddress ip = InetAddress.getByName(ipAddress);
+	
 			InfoUser dest = um.getUser(ip);
-			
+			System.out.println(dest.getPort());
 			if(!existChatController(ip)){
 				Socket socket = new Socket(ip, dest.getPort());
 				this.addChannel(socket);
 			}
 			
-			ChatIHM cIHM = new ChatIHM(pseudo, dest.getPseudo(), listChatController.get(ip));
+			ChatController chatController = listChatController.get(ip);
+			ChatIHM cIHM = new ChatIHM(pseudo, dest.getPseudo(), chatController);
+			chatController.linkModelToIHM(cIHM);
+			
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
 
+	public void notifyNewMessage(InetAddress ip){
+		mainIHM.notifyNewMessage(ip);
+	}
+	
 	public void testComm(){
 		try{
 			//mon ip: "192.168.0.27", autre machine: "192.168.0.25"

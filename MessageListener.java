@@ -5,21 +5,27 @@ public class MessageListener extends Thread{
 
 	private BufferedReader reader;
 	private ChatController chatController;
+	private MessagesModel messagesModel;
 	
-	public MessageListener(BufferedReader br, ChatController cc){
+	public MessageListener(BufferedReader br, ChatController cc, MessagesModel mm){
 		reader = br;
 		chatController = cc;
+		messagesModel = mm;
 	}
 	
 	public void run(){
 		String lastLine = "";;
-		while(true){ //condition a preciser...
+		while(true){ 
 			try {
 				lastLine = reader.readLine();
-				chatController.addMessage(lastLine);
+				if(!chatController.isChatActive()){
+					chatController.notifyNewMessage();
+				}
+				if(lastLine != null){
+					messagesModel.addMessage(new Message(chatController.getInfoDest().getPseudo() + ": " + lastLine));
+				}
 			} catch (IOException e) {
-				e.printStackTrace();
-				
+				return;
 			}
 		}
 	}

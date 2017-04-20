@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.SynchronousQueue;
@@ -39,29 +40,40 @@ import java.util.concurrent.SynchronousQueue;
 
 public class ChatController {
 
+	private Chatsystem chatsystem;
+	private String myPseudo;
+	private InfoUser infoDest;
 	private BufferedWriter writer;
-	private BufferedReader reader;
+	//private BufferedReader reader;
 	private boolean chatActive;	//indique si la fenetre de chat est ouverte ou non
-	public ConcurrentLinkedQueue<String> messages; // enregistre les messages qu'on recoit 
+	//public ConcurrentLinkedQueue<String> messages; // enregistre les messages qu'on recoit 
 	private MessageListener messageListener; // gere la reception des messages => enregistrement dans la file de messages
+	private MessagesModel messagesModel;
 	
-	public ChatController(BufferedReader reader, BufferedWriter writer){
-		this.reader = reader;
+	public ChatController(Chatsystem chatsystem, InfoUser infoDest, BufferedReader reader, BufferedWriter writer, String myPseudo){
+		this.chatsystem = chatsystem;
+		this.myPseudo = myPseudo;
+		this.infoDest = infoDest;
+		//this.reader = reader;
 		this.writer = writer;
-		messages = new ConcurrentLinkedQueue<String>();
-		messageListener = new MessageListener(reader, this);
+		chatActive = false;
+		messagesModel = new MessagesModel(this);
+		//messages = new ConcurrentLinkedQueue<String>();
+		messageListener = new MessageListener(reader, this, messagesModel);
 		messageListener.start();
 	}
 	
-	public synchronized void sendMessage(String msg){
+	public void sendMessage(String msg){
 		try{
-			writer.write(msg);
+			messagesModel.addMessage(new Message(myPseudo + ": " + msg));
+			writer.write(msg + "\n");
 			writer.flush();
 		}catch(IOException e){
+			messagesModel.addMessage(new Message("Echec de l'envoi: " + infoDest.getPseudo() + " est dÈconnectÈ(e)."));
 			System.out.println(e.getMessage());
 		}
 	}
-	
+	/*
 	public String getLastLine(){
 		//on attend de recevoir un message
 		while(isChatActive() && messages.isEmpty()){}
@@ -72,18 +84,10 @@ public class ChatController {
 		}
 	}
 	
-	//mÍµ®ode pour dire ‡°çainIHM de notifier l'utilisateur si un nouveau message a Íµ© recu (par changement de couleur du bouton ou autre)
-	public boolean hasNewMessage(){
-		try{
-			return reader.ready();
-		}catch(IOException e){
-			return false;
-		}
-	}
-	
-	public synchronized void addMessage(String msg){
+	public void addMessage(String msg){
 		messages.add(msg);
 	}
+	*/
 	
 	public void setChatActive(boolean b){
 		this.chatActive = b;
@@ -93,4 +97,15 @@ public class ChatController {
 		return chatActive;
 	}
 	
+	public void notifyNewMessage(){
+		chatsystem.notifyNewMessage(infoDest.getIP());
+	}
+	
+	public void linkModelToIHM(ChatIHM chatIHM){
+		messagesModel.setChatIHM(chatIHM);
+	}
+	
+	public InfoUser getInfoDest(){
+		return infoDest;
+	}
 }

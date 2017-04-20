@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout; 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -65,13 +66,13 @@ public class MainIHM extends JFrame {
 		
 		bConnect.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
-	    		bConnectActionPerformed(e);
+	    		clickConnect();
 	    	}
 	    });
 	}
 	
 	
-public void changeFrame(){
+private void changeFrameConnection(){
 		
 		this.setVisible(false);
 
@@ -115,9 +116,13 @@ public void changeFrame(){
 		
 		bDisconnect.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
-	    		bDisconnectActionPerformed(e);
+	    		clickDisconnect();
 	    	}
 	    });
+	}
+
+	private void changeFrameDisconnection(){
+		
 	}
 	
 	public void addUser(InfoUser info){
@@ -127,13 +132,14 @@ public void changeFrame(){
 		//Seule methode que j'ai trouve pour associer au bouton d'un user son adresse ip (sans l'afficher)
 		//Cette adresse ip sert Ã  identifier de maniere unique le user qu'on selectionne pour se connecter a ce user la et pas un autre
 		//Sinon il y a risque de creer un chatcontroller associe a un user possedant le meme pseudo (si on se base uniquement sur le pseudo)
-		JLabel hiddenIP = new JLabel(info.getIP().getHostName()); 
+		JLabel hiddenIP = new JLabel(info.getIP().getHostAddress()); 
 		hiddenIP.setVisible(false);
 		bName.add(hiddenIP);
 		
 		bName.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-	    		clickUser(e);
+				JButton button = (JButton)e.getSource();
+	    		clickUser(button);
 	    	}
 		});
 		nbUsers++;
@@ -143,12 +149,13 @@ public void changeFrame(){
 		pList.repaint();
 	}
 	
-	public void removeUser(String pseudo){
+	public void removeUser(InfoUser info){
 		nbUsers--;
 		pList.setLayout(new GridLayout(nbUsers,1));
 		for (int i=0; i<pList.getComponentCount(); i++){
 			JButton b = (JButton)pList.getComponent(i);
-			if(b.getText().equals(pseudo)){
+			JLabel l = (JLabel)b.getComponent(0);
+			if(l.getText().equals(info.getIP().getHostAddress())){
 				pList.remove(i);
 			}
 		}
@@ -156,19 +163,37 @@ public void changeFrame(){
 		pList.repaint();
 	}
 
-	private void bConnectActionPerformed(ActionEvent e){
+	private void clickConnect(){
 		myUsername = taUsername.getText();
-		chatsystem.startChatsystem(myUsername);
+		if(myUsername.contains("#")){
+			System.out.println("Le pseudo ne doit pas contenir le caractère '#'");
+		}else{
+			chatsystem.startChatsystem(myUsername);
+			changeFrameConnection();
+		}
 	}
 	
-	private void bDisconnectActionPerformed(ActionEvent e){
+	private void clickDisconnect(){
 		chatsystem.Disconnect();
+		changeFrameDisconnection();
 	}
 	
-	private void clickUser(ActionEvent e){
-		JButton b = (JButton) e.getSource();
+	private void clickUser(JButton b){
 		JLabel ipLabel = (JLabel)b.getComponent(0);
 		chatsystem.openChat(ipLabel.getText());
 		System.out.println(ipLabel.getText());
+		if(b.getBackground().equals(Color.decode("#99ff66"))){
+			b.setBackground(Color.white);
+		}
+	}
+	
+	public void notifyNewMessage(InetAddress ip){
+		for (int i=0; i<pList.getComponentCount(); i++){
+			JButton b = (JButton)pList.getComponent(i);
+			JLabel l = (JLabel) b.getComponent(0);
+			if(l.getText().equals(ip.getHostAddress()) && b.getBackground().equals(Color.white)){
+				b.setBackground(Color.decode("#99ff66"));
+			}
+		}
 	}
 }
