@@ -168,8 +168,8 @@ private void changeFrameConnection(){
 		if(myUsername.contains("#")){
 			System.out.println("Le pseudo ne doit pas contenir le caractère '#'");
 		}else{
-			chatsystem.startChatsystem(myUsername);
 			changeFrameConnection();
+			chatsystem.startChatsystem(myUsername);	
 		}
 	}
 	

@@ -133,29 +133,11 @@ public class Chatsystem{
 	}
 	
 	public ChatController addChannel(Socket socketDest){
-		try{
-			InetAddress ipDest= socketDest.getInetAddress();
-			
-			InputStream iStream = socketDest.getInputStream();
-			OutputStream oStream = socketDest.getOutputStream();
-			
-			InputStreamReader isr = new InputStreamReader(iStream); 
-			OutputStreamWriter osw = new OutputStreamWriter(oStream); 
-			
-			BufferedReader bReader = new BufferedReader(isr);
-			BufferedWriter bWriter = new BufferedWriter(osw);
-			
-			ChatController newChatController = new ChatController(this, um.getUser(socketDest.getInetAddress()), bReader, bWriter, pseudo);
-			listChatController.put(ipDest, newChatController);
+		InetAddress ipDest= socketDest.getInetAddress();
+		ChatController newChatController = new ChatController(this, um.getUser(socketDest.getInetAddress()), socketDest, pseudo);
+		listChatController.put(ipDest, newChatController);
 
-			return newChatController;
-		}catch(UnknownHostException e){
-			System.out.println("Erreur de résolution d'adresse serveur");
-		}catch(IOException e){
-			System.out.println("Client: Erreur lors de la création du socket");
-			System.out.println(e.getMessage());
-		}
-		return null;
+		return newChatController;
 	}
 	
 	public void removeChannel(InfoUser infoDest){

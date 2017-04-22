@@ -1,3 +1,4 @@
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -19,14 +20,15 @@ public class MessagesModel {
 		Iterator<Message> it = listMessages.iterator();
 		while(it.hasNext()){
 			Message message = it.next();
-			chatIHM.printMessage(message.getData());
+			chatIHM.printMessage(new String(message.getData()));
+			
 		}
 	}
 	
 	public void addMessage(Message message){
 		listMessages.add(message);
 		if(chatController.isChatActive()){
-			chatIHM.printMessage(message.getData());
+			chatIHM.printMessage(new String(message.getData()));
 		}
 	}
 	

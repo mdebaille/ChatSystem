@@ -6,8 +6,13 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.*;
@@ -92,8 +97,6 @@ public class ChatIHM extends JFrame{
 		cTA.gridy = 0;
 		cTA.fill = GridBagConstraints.VERTICAL;
 		
-
-		
 		GridBagConstraints cB = new GridBagConstraints();
 		JButton bSend = new JButton("Send");
 		cB.gridx = 1;
@@ -101,10 +104,17 @@ public class ChatIHM extends JFrame{
 		cB.weightx = 0.1;
 		cB.fill = GridBagConstraints.VERTICAL;
 		
+		GridBagConstraints cF = new GridBagConstraints();
+		JButton bFile = new JButton("File");
+		cF.gridx = 2;
+		cF.gridy = 0;
+		cF.weightx = 0.1;
+		cF.fill = GridBagConstraints.VERTICAL;
+		
 		pSend.add(scrollSend, cTA);
 		pSend.add(bSend, cB);
-		
-		
+		pSend.add(bFile, cF);
+	
 		
 		bSend.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
@@ -112,6 +122,11 @@ public class ChatIHM extends JFrame{
 	    	}
 		});
 		
+		bFile.addActionListener(new ActionListener(){
+	    	public void actionPerformed(ActionEvent e){
+	    		clickSelectFile();
+	    	}
+		});
 		
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints cScroll = new GridBagConstraints();
@@ -140,10 +155,26 @@ public class ChatIHM extends JFrame{
 	}
 		
 	public void clickSend(){
-		chatController.sendMessage(taSend.getText());
+		chatController.sendMessage(new Message(false, taSend.getText().length(), taSend.getText().getBytes()));
 		//chatController.addMessage(taSend.getText() + "\n");
 		//printMessage(myPseudo + ": " + taSend.getText() + "\n");
 		taSend.setText("");
+	}
+	
+	private void clickSelectFile(){
+		// ouverture d'une fenetre de selection de fichier
+		final JFileChooser fc = new JFileChooser();
+		fc.showOpenDialog(this);
+	    
+		// copie du fichier dans un tableau d'octet et envoi
+	    try {
+	    	byte[] fileData = new byte[(int) fc.getSelectedFile().length()];
+	        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fc.getSelectedFile()));
+			bis.read(fileData, 0, fileData.length);
+			chatController.sendMessage(new Message(true, fileData.length, fileData));
+	    } catch (IOException e) {	
+			e.printStackTrace();
+		}
 	}
 	
 	protected void printMessage(String msg){
