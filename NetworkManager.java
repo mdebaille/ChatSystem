@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
@@ -25,7 +26,7 @@ public class NetworkManager {
 			this.group = InetAddress.getByName("228.5.6.7");
 			multicastSocket = new MulticastSocket(portMulticast);
 			multicastSocket.joinGroup(group);
-			servSocket = new ServerSocket();
+			servSocket = new ServerSocket(portServSocket);
 			
 			MessageUserBroadcaster messageUserBroadcaster = new MessageUserBroadcaster(this.multicastSocket, this.myPseudo, this.myIP, this.portServSocket, this.group, this.portMulticast);
 			messageUserBroadcaster.start();
@@ -45,6 +46,17 @@ public class NetworkManager {
 	
 	public void addChannel(Socket socketDest){
 		this.mainController.addChatController(socketDest);
+	}
+	
+	public void sendDisconnect(){
+		try{
+			MessageUser mess = new MessageUser(myPseudo, myIP, portServSocket, MessageUser.typeConnect.DISCONNECTED);
+			String message = MessageUser.serializeMessage(mess);
+			DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), group, portMulticast);
+			multicastSocket.send(packet);
+		}catch(IOException e){
+			System.out.println(e.getMessage());
+		}
 	}
 
 	

@@ -42,6 +42,7 @@ public class MainController {
 
 	public void Disconnect() {
 		connected = false;
+		this.networkManager.sendDisconnect();
 	}
 
 	public void addChatController(Socket socketDest) {

@@ -29,6 +29,10 @@ public class MainIHM extends JFrame {
 	
 	JTextArea taUsername;
 	
+	JLabel lMyUsername;
+	JScrollPane scrollList;
+	JPanel pDisconnect;
+	
 	MainController mainController;
 	
 	int nbUsers;
@@ -87,7 +91,7 @@ private void changeFrameConnection(){
 		cUsername.gridx = 0;
 		cUsername.gridy = 0;
 		cUsername.fill = GridBagConstraints.HORIZONTAL;
-		JLabel lMyUsername = new JLabel(myUsername, JLabel.CENTER);
+		lMyUsername = new JLabel(myUsername, JLabel.CENTER);
 		lMyUsername.setForeground(Color.MAGENTA);
 		lMyUsername.setBorder(new EmptyBorder(20,20,20,20));
 
@@ -97,14 +101,14 @@ private void changeFrameConnection(){
 		cList.fill = GridBagConstraints.HORIZONTAL;
 		pList = new JPanel();
 		pList.setLayout(new GridLayout(nbUsers,1));
-		JScrollPane scrollList = new JScrollPane(pList);
+		scrollList = new JScrollPane(pList);
 		scrollList.setPreferredSize(new Dimension(100,200));
 		
 		GridBagConstraints cDisconnect = new GridBagConstraints();
 		cDisconnect.gridx = 0;
 		cDisconnect.gridy = 2;
 		cDisconnect.fill = GridBagConstraints.HORIZONTAL;
-		JPanel pDisconnect = new JPanel(new BorderLayout());
+		pDisconnect = new JPanel(new BorderLayout());
 		pDisconnect.setBorder(new EmptyBorder(20, 60, 20, 60));
 		JButton bDisconnect = new JButton("Disconnect");
 		pDisconnect.add(bDisconnect, BorderLayout.CENTER);
@@ -129,6 +133,9 @@ private void changeFrameConnection(){
 	}
 
 	private void changeFrameDisconnection(){
+		this.remove(lMyUsername);
+		this.remove(scrollList);
+		this.remove(pDisconnect);
 		initComponents();
 	}
 	
@@ -182,8 +189,9 @@ private void changeFrameConnection(){
 	}
 	
 	private void clickDisconnect(){
-		mainController.Disconnect();
 		changeFrameDisconnection();
+		mainController.Disconnect();
+		mainController = null;
 	}
 	
 	private void clickUser(JButton b){
