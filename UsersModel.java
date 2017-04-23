@@ -16,17 +16,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UsersModel{
 	
 	final int refreshDelay = 6000; //6s
-	//ArrayList<InfoUser> listUser;
 	HashMap<InetAddress, InfoUser> listUser;
 	MainIHM ihm;
 	ConcurrentHashMap<InetAddress, Integer> listCompteurs;
 	Timer timer;
 	MainController mainController;
 	
-	public UsersModel(final MainController mainController){
+	public UsersModel(final MainIHM ihm){
 		listUser = new HashMap<InetAddress, InfoUser>();
-		this.mainController = mainController;
-		this.ihm = mainController.getMainIHM();
+		this.ihm = ihm;
 		listCompteurs = new ConcurrentHashMap<InetAddress, Integer>();
 		
 		TimerTask update = new TimerTask() {
@@ -87,16 +85,6 @@ public class UsersModel{
 	}
 	
 	public void removeUser(InetAddress ip){
-		/*
-		Iterator<InfoUser> iter = listUser.iterator();
-		Boolean found = false;
-		InfoUser info = null;
-		while (iter.hasNext() && !found) {
-		    info = iter.next();
-		    if (info.getIP().equals(ip)){
-		    	found = true;
-		    }
-		}*/
 		InfoUser info = listUser.remove(ip);
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
     	ihm.removeUser(info);
@@ -110,6 +98,14 @@ public class UsersModel{
 	
 	public InfoUser getUser(InetAddress ip){
 		return listUser.get(ip);
+	}
+	
+	public void setMainController(MainController mc){
+		this.mainController = mc;
+	}
+	
+	public void notifyNewMessage(InetAddress ip){
+		ihm.notifyNewMessage(ip);
 	}
 	
 }

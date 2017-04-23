@@ -17,6 +17,8 @@ import javax.swing.border.EmptyBorder;
  */
 
 
+
+
 public class MainIHM extends JFrame {
 	
 	String myUsername;
@@ -31,8 +33,13 @@ public class MainIHM extends JFrame {
 	
 	int nbUsers;
 	
-	public MainIHM(MainController mainController){
-		this.mainController = mainController;
+	
+	public static void main(String[] args) {
+		MainIHM mainIHM = new MainIHM();
+	}
+	
+	
+	public MainIHM(){
 		this.nbUsers = 0;
 		initComponents();
 	}
@@ -122,7 +129,7 @@ private void changeFrameConnection(){
 	}
 
 	private void changeFrameDisconnection(){
-		
+		initComponents();
 	}
 	
 	public void addUser(InfoUser info){
@@ -169,7 +176,8 @@ private void changeFrameConnection(){
 			System.out.println("Le pseudo ne doit pas contenir le caractère '#'");
 		}else{
 			changeFrameConnection();
-			mainController.startChatsystem(myUsername);	
+			UsersModel um = new UsersModel(this);
+			this.mainController = new MainController(myUsername, um);
 		}
 	}
 	
