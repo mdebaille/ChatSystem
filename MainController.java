@@ -1,15 +1,6 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -27,22 +18,14 @@ import java.util.TimerTask;
  * création chat controller et canal ??????????????
  */
 
-public class Chatsystem{
+public class MainController{
 	
 	private MainIHM mainIHM;
-
-	private InetAddress address;
-	private int portMulticast;
-	private int portServSocket;
-	private ServerSocket servSocket;
-	
 	private String pseudo;
-	
-	private InetAddress group;
-	private MulticastSocket multicastSocket;
-	
 	private UsersModel um;
 	private HashMap<InetAddress, ChatController> listChatController;
+	
+	private NetworkManager networkManager;
 	
 	boolean connected = false;
 	
@@ -52,7 +35,7 @@ public class Chatsystem{
 	static int myPortServer;
 	
 	public static void main(String[] args) {
-		if(args.length >= 2){
+		/*if(args.length >= 2){
 			portServerDest = Integer.parseInt(args[0]);
 			myPortServer = Integer.parseInt(args[1]);
 		}
@@ -61,70 +44,21 @@ public class Chatsystem{
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		Chatsystem chatSystem = new Chatsystem();
+		}*/
+		MainController mainController = new MainController();
 	}
 	
-	public Chatsystem(){
-		try{
-			this.address = InetAddress.getLocalHost();
-			this.portServSocket = myPortServer;
-			
-			this.portMulticast = 17002;	// valeur a definir
-			group = InetAddress.getByName("228.5.6.7"); // valeur adefinir
-		
-		}catch(IOException e){
-			System.out.println(e.getMessage());
-		}
-		
+	public MainController(){
 		mainIHM = new MainIHM(this);
-	}
-	
-	public void sendMessageUser(){
-		try{
-			MessageUser mess = new MessageUser(pseudo, address, portServSocket, MessageUser.typeConnect.CONNECTED);
-			String m = serializeMessage(mess);
-			DatagramPacket packet = new DatagramPacket(m.getBytes(), m.length(), group, portMulticast);
-			multicastSocket.send(packet);
-		}catch (IOException e){
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	public String serializeMessage(MessageUser messageUser){
-		return messageUser.getPseudo() + "#" 
-				+ messageUser.getIP().getHostAddress() + "#"
-				+ messageUser.getPort() + "#" 
-				+ messageUser.getEtat();
 	}
 	
 	
 	public void startChatsystem(String pseudo){
 		this.pseudo = pseudo;
-		
 		um = new UsersModel(this);
 		listChatController = new HashMap<InetAddress, ChatController>();
-		
 		connected = true;
-		//testIHM();
-		
-		try{
-			multicastSocket = new MulticastSocket(portMulticast);
-			multicastSocket.joinGroup(group);
-			servSocket = new ServerSocket(portServSocket);
-			
-			// Boucle infinie pour accepter les connections d'autres utilisateurs quand ils veulent communiquer avec nous
-			AcceptConnection acceptLoop = new AcceptConnection(servSocket, this);
-			acceptLoop.start();
-			
-			// Boucle infinie qui gere la reception des MessageUser emis en multicast et les passe ࡕsersModel pour que la liste des users soit mise ࡪour
-			MulticastListener multicastListener = new MulticastListener(multicastSocket, um);
-			multicastListener.start();
-			
-		}catch(IOException e){
-			System.out.println("Chatsystem: " + e.getMessage());
-		}
-		
+		networkManager = new NetworkManager(pseudo, this);
 		testComm();
 	}
 	
@@ -132,16 +66,15 @@ public class Chatsystem{
 		connected = false;
 	}
 	
-	public ChatController addChannel(Socket socketDest){
+	public void addChatController(Socket socketDest){
 		InetAddress ipDest= socketDest.getInetAddress();
-		ChatController newChatController = new ChatController(this, um.getUser(socketDest.getInetAddress()), socketDest, pseudo);
+		ChatController newChatController = new ChatController(this, um.getUser(ipDest), socketDest, pseudo);
 		listChatController.put(ipDest, newChatController);
 
-		return newChatController;
 	}
 	
-	public void removeChannel(InfoUser infoDest){
-		listChatController.remove(infoDest.getIP());
+	public void removeChatController(InetAddress ip){
+		listChatController.remove(ip);
 	}
 
 	public boolean existChatController(InetAddress ip){
@@ -156,7 +89,7 @@ public class Chatsystem{
 			System.out.println(dest.getPort());
 			if(!existChatController(ip)){
 				Socket socket = new Socket(ip, dest.getPort());
-				this.addChannel(socket);
+				this.addChatController(socket);
 			}
 			
 			ChatController chatController = listChatController.get(ip);
@@ -231,4 +164,9 @@ public class Chatsystem{
 	public MainIHM getMainIHM(){
 		return mainIHM;
 	}
+	
+	public UsersModel getUsersModel(){
+		return this.um;
+	}
+	
 }

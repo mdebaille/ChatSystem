@@ -5,18 +5,18 @@ import java.net.Socket;
 public class AcceptConnection extends Thread{
 
 	private ServerSocket serverSocket;
-	private Chatsystem chatsystem;
+	private NetworkManager networkManager;
 	
-	public AcceptConnection(ServerSocket s, Chatsystem c){
+	public AcceptConnection(ServerSocket s, NetworkManager networkManager){
 		this.serverSocket = s;
-		this.chatsystem = c;
+		this.networkManager = networkManager;
 	}
 	
 	public void run(){
 		while(true){
 			try{
 				Socket socket = serverSocket.accept();
-				chatsystem.addChannel(socket);
+				networkManager.addChannel(socket);
 				System.out.println("Connection acceptée.");
 			}catch(IOException e){
 				System.out.println("AcceptConnection: " + e.getMessage());

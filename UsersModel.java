@@ -1,7 +1,6 @@
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map.Entry;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Timer;
@@ -16,19 +15,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class UsersModel{
 	
-	final int delay = 2000; //2s
+	final int refreshDelay = 6000; //6s
 	//ArrayList<InfoUser> listUser;
 	HashMap<InetAddress, InfoUser> listUser;
 	MainIHM ihm;
 	ConcurrentHashMap<InetAddress, Integer> listCompteurs;
 	Timer timer;
-	Chatsystem chatSystem;
+	MainController mainController;
 	
-	public UsersModel(final Chatsystem chatSystem){
-		//listUser = new ArrayList<InfoUser>();
+	public UsersModel(final MainController mainController){
 		listUser = new HashMap<InetAddress, InfoUser>();
-		this.chatSystem = chatSystem;
-		this.ihm = chatSystem.getMainIHM();
+		this.mainController = mainController;
+		this.ihm = mainController.getMainIHM();
 		listCompteurs = new ConcurrentHashMap<InetAddress, Integer>();
 		
 		TimerTask update = new TimerTask() {
@@ -51,15 +49,8 @@ public class UsersModel{
             }
         };
         
-        TimerTask send = new TimerTask() {
-            public void run() {
-            	chatSystem.sendMessageUser();
-            }
-        };
-        
         timer = new Timer();
-        timer.schedule(update, 3*delay, 3*delay);
-        timer.schedule(send, delay, delay);
+        timer.schedule(update, refreshDelay, refreshDelay);
 	}
 	
 	public boolean existInList(InetAddress IP){
@@ -109,7 +100,7 @@ public class UsersModel{
 		InfoUser info = listUser.remove(ip);
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
     	ihm.removeUser(info);
-    	chatSystem.removeChannel(info);
+    	mainController.removeChatController(info.getIP());
 	}
 	
 	public void addUser(InfoUser info){

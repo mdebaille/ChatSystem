@@ -27,12 +27,12 @@ public class MainIHM extends JFrame {
 	
 	JTextArea taUsername;
 	
-	Chatsystem chatsystem;
+	MainController mainController;
 	
 	int nbUsers;
 	
-	public MainIHM(Chatsystem chatsystem){
-		this.chatsystem = chatsystem;
+	public MainIHM(MainController mainController){
+		this.mainController = mainController;
 		this.nbUsers = 0;
 		initComponents();
 	}
@@ -169,18 +169,18 @@ private void changeFrameConnection(){
 			System.out.println("Le pseudo ne doit pas contenir le caractère '#'");
 		}else{
 			changeFrameConnection();
-			chatsystem.startChatsystem(myUsername);	
+			mainController.startChatsystem(myUsername);	
 		}
 	}
 	
 	private void clickDisconnect(){
-		chatsystem.Disconnect();
+		mainController.Disconnect();
 		changeFrameDisconnection();
 	}
 	
 	private void clickUser(JButton b){
 		JLabel ipLabel = (JLabel)b.getComponent(0);
-		chatsystem.openChat(ipLabel.getText());
+		mainController.openChat(ipLabel.getText());
 		System.out.println(ipLabel.getText());
 		if(b.getBackground().equals(Color.decode("#99ff66"))){
 			b.setBackground(Color.white);

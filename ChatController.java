@@ -1,16 +1,8 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.SynchronousQueue;
 
 
 
@@ -46,7 +38,7 @@ import java.util.concurrent.SynchronousQueue;
 
 public class ChatController {
 
-	private Chatsystem chatsystem;
+	private MainController mainController;
 	private String myPseudo;
 	private InfoUser infoDest;
 	private OutputStream os; 					// permet d'envoyer les messages
@@ -54,10 +46,10 @@ public class ChatController {
 	private MessageListener messageListener; 	// gere la reception des messages => enregistrement dans la file de messages
 	private MessagesModel messagesModel;
 	
-	public ChatController(Chatsystem chatsystem, InfoUser infoDest, Socket socketDest, String myPseudo){
+	public ChatController(MainController mainController, InfoUser infoDest, Socket socketDest, String myPseudo){
 		try {
 			this.os = socketDest.getOutputStream();
-			this.chatsystem = chatsystem;
+			this.mainController = mainController;
 			this.myPseudo = myPseudo;
 			this.infoDest = infoDest;
 			this.chatActive = false;
@@ -99,7 +91,7 @@ public class ChatController {
 	}
 	
 	public void notifyNewMessage(){
-		chatsystem.notifyNewMessage(infoDest.getIP());
+		mainController.notifyNewMessage(infoDest.getIP());
 	}
 	
 	public void linkModelToIHM(ChatIHM chatIHM){
