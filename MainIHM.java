@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout; 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
@@ -34,6 +36,7 @@ public class MainIHM extends JFrame {
 	
 	JLabel lMyUsername;
 	JScrollPane scrollList;
+	JButton bSendGroup;
 	JPanel pSendGroup;
 	JPanel pDisconnect;
 	
@@ -116,7 +119,8 @@ private void changeFrameConnection(){
 		cGroup.fill = GridBagConstraints.HORIZONTAL;
 		pSendGroup = new JPanel(new BorderLayout());
 		pSendGroup.setBorder(new EmptyBorder(20, 60, 10, 60));
-		JButton bSendGroup = new JButton("Send to group");
+		bSendGroup = new JButton("Send to group");
+		bSendGroup.setEnabled(false);
 		pSendGroup.add(bSendGroup, BorderLayout.CENTER);
 		
 		GridBagConstraints cDisconnect = new GridBagConstraints();
@@ -168,8 +172,8 @@ private void changeFrameConnection(){
 		JPanel pUser = new JPanel(new FlowLayout());
 		
 		JCheckBox cb = new JCheckBox();
-		cb.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		cb.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
 	    		selectUser(e);
 	    	}
 		});
@@ -245,13 +249,24 @@ private void changeFrameConnection(){
 		}
 	}
 	
-	private void selectUser(ActionEvent e){
+	private void selectUser(ItemEvent e){
 		JComponent cb = (JComponent) e.getSource();
 		Container panel = cb.getParent();
 		JButton b = (JButton) panel.getComponent(1);
 		JLabel label = (JLabel) b.getComponent(0);
-		listGroup.add(label.getText());
-		System.out.println("Ajout de l'IP " + label.getText() + " au groupe");
+		if (e.getStateChange() == ItemEvent.DESELECTED){
+			if(listGroup.size() == 1){
+				bSendGroup.setEnabled(false);
+			}
+			listGroup.remove(label.getText());
+			System.out.println("Suppression de l'IP " + label.getText() + " dans le  groupe");
+		}else{
+			if (listGroup.size() == 0){
+				bSendGroup.setEnabled(true);
+			}
+			listGroup.add(label.getText());
+			System.out.println("Ajout de l'IP " + label.getText() + " au groupe");
+		}
 	}
 	
 	public void notifyNewMessage(InetAddress ip){
