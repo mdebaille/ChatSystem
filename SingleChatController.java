@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class SingleChatController extends ChatController{
 
+	private Socket socketDest;
 	private OutputStream os;					// permet d'envoyer les messages
 	private InfoUser infoDest;
 	private MessageListener messageListener;	// gere la reception des messages => enregistrement dans la file de messages
@@ -14,6 +15,7 @@ public class SingleChatController extends ChatController{
 	public SingleChatController(MainController mc, InfoUser infoDest, Socket socketDest, String myPseudo){
 		super(mc, myPseudo);
 		try {
+			this.socketDest = socketDest;
 			this.os = socketDest.getOutputStream();
 			this.infoDest = infoDest;
 			this.messageListener = new MessageListener(new DataInputStream(socketDest.getInputStream()), this, messagesModel);
@@ -50,5 +52,9 @@ public class SingleChatController extends ChatController{
 	
 	public InfoUser getInfoDest(){
 		return infoDest;
+	}
+	
+	public Socket getSocketDest(){
+		return socketDest;
 	}
 }

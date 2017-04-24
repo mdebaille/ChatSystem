@@ -12,7 +12,7 @@ public class MainController {
 
 	private String pseudo;
 	private UsersModel um;
-	private HashMap<InetAddress, ChatController> listChatController;
+	private HashMap<InetAddress, SingleChatController> listChatController;
 
 	private NetworkManager networkManager;
 
@@ -34,7 +34,7 @@ public class MainController {
 		this.pseudo = pseudo;
 		this.um = um;
 		um.setMainController(this);
-		listChatController = new HashMap<InetAddress, ChatController>();
+		listChatController = new HashMap<InetAddress, SingleChatController>();
 		connected = true;
 		networkManager = new NetworkManager(pseudo, this);
 		testIHM();
@@ -48,7 +48,7 @@ public class MainController {
 
 	public void addChatController(Socket socketDest) {
 		InetAddress ipDest = socketDest.getInetAddress();
-		ChatController newChatController = new SingleChatController(this, um.getUser(ipDest), socketDest, pseudo);
+		SingleChatController newChatController = new SingleChatController(this, um.getUser(ipDest), socketDest, pseudo);
 		listChatController.put(ipDest, newChatController);
 	}
 
@@ -86,7 +86,13 @@ public class MainController {
 			try {
 				InetAddress ipAddress = InetAddress.getByName(ip);
 				InfoUser dest = um.getUser(ipAddress);
-				listSocket.add(new Socket(ipAddress, dest.getPort()));
+				if(existChatController(ipAddress)){
+					listSocket.add(listChatController.get(ipAddress).getSocketDest());
+				}else{
+					Socket socket = new Socket(ipAddress, dest.getPort());
+					listSocket.add(socket);
+					this.addChatController(socket);
+				}
 			} catch(IOException e){
 				System.out.println(e.getMessage());
 			} 
