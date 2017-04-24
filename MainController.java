@@ -38,6 +38,7 @@ public class MainController {
 		connected = true;
 		networkManager = new NetworkManager(pseudo, this);
 		// testComm();
+		testIHM();
 	}
 
 	public void Disconnect() {

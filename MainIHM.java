@@ -1,12 +1,15 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout; 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -31,12 +34,14 @@ public class MainIHM extends JFrame {
 	
 	JLabel lMyUsername;
 	JScrollPane scrollList;
+	JPanel pSendGroup;
 	JPanel pDisconnect;
 	
 	MainController mainController;
 	
 	int nbUsers;
 	
+	ArrayList<String> listGroup;
 	
 	public static void main(String[] args) {
 		MainIHM mainIHM = new MainIHM();
@@ -45,6 +50,7 @@ public class MainIHM extends JFrame {
 	
 	public MainIHM(){
 		this.nbUsers = 0;
+		listGroup = new ArrayList<String>();
 		initComponents();
 	}
 	
@@ -104,14 +110,25 @@ private void changeFrameConnection(){
 		scrollList = new JScrollPane(pList);
 		scrollList.setPreferredSize(new Dimension(100,200));
 		
+		GridBagConstraints cGroup = new GridBagConstraints();
+		cGroup.gridx = 0;
+		cGroup.gridy = 2;
+		cGroup.fill = GridBagConstraints.HORIZONTAL;
+		pSendGroup = new JPanel(new BorderLayout());
+		pSendGroup.setBorder(new EmptyBorder(20, 60, 10, 60));
+		JButton bSendGroup = new JButton("Send to group");
+		pSendGroup.add(bSendGroup, BorderLayout.CENTER);
+		
 		GridBagConstraints cDisconnect = new GridBagConstraints();
 		cDisconnect.gridx = 0;
-		cDisconnect.gridy = 2;
+		cDisconnect.gridy = 3;
 		cDisconnect.fill = GridBagConstraints.HORIZONTAL;
 		pDisconnect = new JPanel(new BorderLayout());
-		pDisconnect.setBorder(new EmptyBorder(20, 60, 20, 60));
+		pDisconnect.setBorder(new EmptyBorder(10, 60, 20, 60));
 		JButton bDisconnect = new JButton("Disconnect");
 		pDisconnect.add(bDisconnect, BorderLayout.CENTER);
+		
+		
 		
 		
 		this.remove(pInputUsername);
@@ -120,6 +137,7 @@ private void changeFrameConnection(){
 		this.setLayout(new GridBagLayout());;
 		this.add(lMyUsername, cUsername);
 		this.add(scrollList, cList);
+		this.add(pSendGroup, cGroup);
 		this.add(pDisconnect, cDisconnect);
 		
 		this.pack();
@@ -130,16 +148,32 @@ private void changeFrameConnection(){
 	    		clickDisconnect();
 	    	}
 	    });
+		
+		bSendGroup.addActionListener(new ActionListener(){
+	    	public void actionPerformed(ActionEvent e){
+	    		clickSendGroup();
+	    	}
+	    });
 	}
 
 	private void changeFrameDisconnection(){
 		this.remove(lMyUsername);
 		this.remove(scrollList);
+		this.remove(pSendGroup);
 		this.remove(pDisconnect);
 		initComponents();
 	}
 	
 	public void addUser(InfoUser info){
+		JPanel pUser = new JPanel(new FlowLayout());
+		
+		JCheckBox cb = new JCheckBox();
+		cb.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+	    		selectUser(e);
+	    	}
+		});
+		
 		JButton bName = new JButton(info.getPseudo());
 		bName.setBackground(Color.white);
 		
@@ -156,9 +190,13 @@ private void changeFrameConnection(){
 	    		clickUser(button);
 	    	}
 		});
+		
+		pUser.add(cb);
+		pUser.add(bName);
+		
 		nbUsers++;
 		pList.setLayout(new GridLayout(nbUsers,1));
-		pList.add(bName);
+		pList.add(pUser);
 		pList.revalidate();
 		pList.repaint();
 	}
@@ -194,6 +232,10 @@ private void changeFrameConnection(){
 		mainController = null;
 	}
 	
+	private void clickSendGroup(){
+		
+	}
+	
 	private void clickUser(JButton b){
 		JLabel ipLabel = (JLabel)b.getComponent(0);
 		mainController.openChat(ipLabel.getText());
@@ -201,6 +243,15 @@ private void changeFrameConnection(){
 		if(b.getBackground().equals(Color.decode("#99ff66"))){
 			b.setBackground(Color.white);
 		}
+	}
+	
+	private void selectUser(ActionEvent e){
+		JComponent cb = (JComponent) e.getSource();
+		Container panel = cb.getParent();
+		JButton b = (JButton) panel.getComponent(1);
+		JLabel label = (JLabel) b.getComponent(0);
+		listGroup.add(label.getText());
+		System.out.println("Ajout de l'IP " + label.getText() + " au groupe");
 	}
 	
 	public void notifyNewMessage(InetAddress ip){
