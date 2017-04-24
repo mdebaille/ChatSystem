@@ -8,6 +8,7 @@ public class MessageUserBroadcaster extends Thread{
 	private static int sendDelay = 2000; // 2s
 	private MulticastSocket multicastSocket;
 	private DatagramPacket packet;
+	private boolean connected;
 	
 	public MessageUserBroadcaster(MulticastSocket multicastSocket, String myPseudo, InetAddress myIP, int myPort, InetAddress group, int portMulticast){
 		this.multicastSocket = multicastSocket;
@@ -31,4 +32,6 @@ public class MessageUserBroadcaster extends Thread{
 			}
 		}
 	}
+	
+	
 }
