@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class GroupChatController extends ChatController{
 	
-	private ArrayList<OutputStream> listOs;
+	private ArrayList<OutputStream> listOs; // permet d'envoyer les messages
 	
 	public GroupChatController(MainController mc, ArrayList<Socket> listSocket, String myPseudo){
 		super(mc, myPseudo);
