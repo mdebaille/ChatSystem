@@ -8,10 +8,10 @@ public class MessageListener extends Thread{
 
 	private DataInputStream is;						// permet de lire les messages recus
 	private ByteArrayOutputStream byteOStream;		// pour concatener des chaines d'octets 
-	private ChatController chatController;	
+	private SingleChatController chatController;	
 	private MessagesModel messagesModel;
 	
-	public MessageListener(DataInputStream is, ChatController cc, MessagesModel mm){
+	public MessageListener(DataInputStream is, SingleChatController cc, MessagesModel mm){
 		this.is= is;
 		this.chatController = cc;
 		this.messagesModel = mm;

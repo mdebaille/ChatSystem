@@ -37,34 +37,34 @@ import java.util.ArrayList;
  *  
  */
 
-public class ChatController {
+public abstract class ChatController {
 
-	private MainController mainController;
-	private String myPseudo;
-	private InfoUser infoDest;
-	private ArrayList<OutputStream> listOs; 					// permet d'envoyer les messages
-	private boolean chatActive;					// indique si la fenetre de chat est ouverte ou non
-	private MessageListener messageListener; 	// gere la reception des messages => enregistrement dans la file de messages
-	private MessagesModel messagesModel;
+	protected MainController mainController;
+	protected String myPseudo;
+	//private InfoUser infoDest;
+	//private OutputStream os; 					// permet d'envoyer les messages
+	protected boolean chatActive;					// indique si la fenetre de chat est ouverte ou non
+	//private MessageListener messageListener; 	// gere la reception des messages => enregistrement dans la file de messages
+	protected MessagesModel messagesModel;
 	
 	// construit un ChatController pour un chat entre 2 utilisateurs 
-	public ChatController(MainController mainController, InfoUser infoDest, Socket socketDest, String myPseudo){
-		try {
-			this.listOs.add(socketDest.getOutputStream());
+	public ChatController(MainController mainController,/*, InfoUser infoDest, Socket socketDest,*/ String myPseudo){
+		//try {
+			//this.os = socketDest.getOutputStream();
 			this.mainController = mainController;
 			this.myPseudo = myPseudo;
-			this.infoDest = infoDest;
+			//this.infoDest = infoDest;
 			this.chatActive = false;
 			this.messagesModel = new MessagesModel(this);
-			this.messageListener = new MessageListener(new DataInputStream(socketDest.getInputStream()), this, messagesModel);
-			messageListener.start();
-		} catch (IOException e) {
+			//this.messageListener = new MessageListener(new DataInputStream(socketDest.getInputStream()), this, messagesModel);
+			//messageListener.start();
+		/*} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	// construit un ChatController pour envoyer des messages a un groupe d'utilisateur
-	public ChatController(MainController mainController, ArrayList<Socket> listSocket, String myPseudo){
+	/*public ChatController(MainController mainController, ArrayList<Socket> listSocket, String myPseudo){
 		try {
 			for(Socket s: listSocket){
 				this.listOs.add(s.getOutputStream());
@@ -77,30 +77,9 @@ public class ChatController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
-	public void sendMessage(Message message){
-		try{
-			// serialisation et envoi du message
-			byte[] serializedMessage = Message.serializeMessage(message);
-			for(OutputStream os: listOs){
-				os.write(serializedMessage, 0, serializedMessage.length);
-			}
-			
-			// mise a jour du MessagesModel (ajout du message envoye)
-			String messageToSave;
-			if(message.isTypeFile()){
-				messageToSave = "File sent.";
-			}else{
-				messageToSave =  myPseudo + ": " + new String(message.getData(), "UTF-8");
-			}
-			messagesModel.addMessage(new Message(message.isTypeFile(), messageToSave.length(), messageToSave.getBytes()));
-		}catch(IOException e){
-			String messageToSave = "Echec de l'envoi: " + infoDest.getPseudo() + " est d�connect�(e).";
-			messagesModel.addMessage(new Message(false, messageToSave.getBytes().length, messageToSave.getBytes()));
-			System.out.println(e.getMessage());
-		}
-	}
+	public abstract void sendMessage(Message message);
 	
 	public void setChatActive(boolean b){
 		this.chatActive = b;
@@ -110,15 +89,13 @@ public class ChatController {
 		return chatActive;
 	}
 	
-	public void notifyNewMessage(){
-		mainController.notifyNewMessage(infoDest.getIP());
-	}
+	//public void notifyNewMessage(){}
 	
 	public void linkModelToIHM(ChatIHM chatIHM){
 		messagesModel.setChatIHM(chatIHM);
 	}
-	
+	/*
 	public InfoUser getInfoDest(){
 		return infoDest;
-	}
+	}*/
 }

@@ -38,7 +38,6 @@ public class MainController {
 		connected = true;
 		networkManager = new NetworkManager(pseudo, this);
 		// testComm();
-		testIHM();
 	}
 
 	public void Disconnect() {
@@ -47,16 +46,10 @@ public class MainController {
 		networkManager.notifyDisconnection();
 	}
 
-	public void addChatController(ArrayList<Socket> listSocketDest) {
-		if(listSocketDest.size() == 1){
-			InetAddress ipDest = listSocketDest.get(0).getInetAddress();
-			ChatController newChatController = new ChatController(this, um.getUser(ipDest), listSocketDest.get(0), pseudo);
-			listChatController.put(ipDest, newChatController);
-		}else{
-			ChatController newChatController = new ChatController(this, listSocketDest, pseudo);
-		}
-		
-
+	public void addChatController(Socket socketDest) {
+		InetAddress ipDest = socketDest.getInetAddress();
+		ChatController newChatController = new SingleChatController(this, um.getUser(ipDest), socketDest, pseudo);
+		listChatController.put(ipDest, newChatController);
 	}
 
 	public void removeChatController(InetAddress ip) {
@@ -86,6 +79,21 @@ public class MainController {
 			e.printStackTrace();
 		}
 	}
+	
+	public void openGroupChat(ArrayList<String> listIpAddress){
+		ArrayList<Socket> listSocket = new ArrayList<Socket>();
+		for(String ip: listIpAddress){
+			try {
+				InetAddress ipAddress = InetAddress.getByName(ip);
+				InfoUser dest = um.getUser(ipAddress);
+				listSocket.add(new Socket(ipAddress, dest.getPort()));
+			} catch(IOException e){
+				System.out.println(e.getMessage());
+			} 
+		}
+		GroupChatController groupChatController = new GroupChatController(this, listSocket, pseudo);
+		ChatIHM cIHM = new ChatIHM(pseudo, "Group", groupChatController);
+	}
 
 	public void notifyNewMessage(InetAddress ip) {
 		um.notifyNewMessage(ip);
@@ -94,11 +102,6 @@ public class MainController {
 	public UsersModel getUsersModel() {
 		return this.um;
 	}
-	
-	
-	
-	
-	//--------------Partie test------------------
 
 	/*
 	 * public void testComm(){ try{ //mon ip: "192.168.0.27", autre machine:

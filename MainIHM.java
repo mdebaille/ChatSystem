@@ -218,7 +218,7 @@ private void changeFrameConnection(){
 	private void clickConnect(){
 		myUsername = taUsername.getText();
 		if(myUsername.contains("#")){
-			System.out.println("Le pseudo ne doit pas contenir le caractère '#'");
+			System.out.println("Le pseudo ne doit pas contenir le caractï¿½re '#'");
 		}else{
 			changeFrameConnection();
 			UsersModel um = new UsersModel(this);
@@ -233,7 +233,7 @@ private void changeFrameConnection(){
 	}
 	
 	private void clickSendGroup(){
-		
+		mainController.openGroupChat(listGroup);
 	}
 	
 	private void clickUser(JButton b){
