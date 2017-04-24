@@ -42,13 +42,19 @@ public class MainController {
 
 	public void Disconnect() {
 		connected = false;
-		this.networkManager.sendDisconnect();
+		networkManager.sendDisconnect();
+		networkManager.notifyDisconnection();
 	}
 
-	public void addChatController(Socket socketDest) {
-		InetAddress ipDest = socketDest.getInetAddress();
-		ChatController newChatController = new ChatController(this, um.getUser(ipDest), socketDest, pseudo);
-		listChatController.put(ipDest, newChatController);
+	public void addChatController(ArrayList<Socket> listSocketDest) {
+		if(listSocketDest.size() == 1){
+			InetAddress ipDest = listSocketDest.get(0).getInetAddress();
+			ChatController newChatController = new ChatController(this, um.getUser(ipDest), listSocketDest.get(0), pseudo);
+			listChatController.put(ipDest, newChatController);
+		}else{
+			ChatController newChatController = new ChatController(this, listSocketDest, pseudo);
+		}
+		
 
 	}
 
@@ -83,6 +89,15 @@ public class MainController {
 	public void notifyNewMessage(InetAddress ip) {
 		um.notifyNewMessage(ip);
 	}
+	
+	public UsersModel getUsersModel() {
+		return this.um;
+	}
+	
+	
+	
+	
+	//--------------Partie test------------------
 
 	/*
 	 * public void testComm(){ try{ //mon ip: "192.168.0.27", autre machine:
@@ -135,10 +150,6 @@ public class MainController {
 		};
 		timer.schedule(task1, 2000, 2000);
 		timer.schedule(task2, 6000, 2000);
-	}
-
-	public UsersModel getUsersModel() {
-		return this.um;
 	}
 
 }

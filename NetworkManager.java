@@ -17,6 +17,9 @@ public class NetworkManager {
 	private MulticastSocket multicastSocket;
 	
 	MainController mainController;
+	MessageUserBroadcaster messageUserBroadcaster;
+	AcceptConnection acceptLoop;
+	MulticastListener multicastListener;
 	
 	public NetworkManager(String pseudo, MainController mainController){
 		try{
@@ -28,15 +31,16 @@ public class NetworkManager {
 			multicastSocket.joinGroup(group);
 			servSocket = new ServerSocket(portServSocket);
 			
-			MessageUserBroadcaster messageUserBroadcaster = new MessageUserBroadcaster(this.multicastSocket, this.myPseudo, this.myIP, this.portServSocket, this.group, this.portMulticast);
+			// Envoie les MessageUser periodiquement (pour signaler notre connection)
+			messageUserBroadcaster = new MessageUserBroadcaster(this.multicastSocket, this.myPseudo, this.myIP, this.portServSocket, this.group, this.portMulticast);
 			messageUserBroadcaster.start();
 			
-			// Boucle infinie pour accepter les connections d'autres utilisateurs quand ils veulent communiquer avec nous
-			AcceptConnection acceptLoop = new AcceptConnection(servSocket, this);
+			// Accepte les connections d'autres utilisateurs quand ils veulent communiquer avec nous
+			acceptLoop = new AcceptConnection(servSocket, this);
 			acceptLoop.start();
 			
-			// Boucle infinie qui gere la reception des MessageUser emis en multicast et les passe ࡕsersModel pour que la liste des users soit mise ࡪour
-			MulticastListener multicastListener = new MulticastListener(multicastSocket, this.mainController.getUsersModel());
+			// Gere la reception des MessageUser emis en multicast et les passe a UsersModel pour que la liste des users soit mise a jour
+			multicastListener = new MulticastListener(multicastSocket, this.mainController.getUsersModel());
 			multicastListener.start();
 			
 		}catch(IOException e){
@@ -59,5 +63,10 @@ public class NetworkManager {
 		}
 	}
 
+	public void notifyDisconnection(){
+		messageUserBroadcaster.setConnected(false);
+		acceptLoop.setConnected(false);
+		multicastListener.setConnected(false);
+	}
 	
 }

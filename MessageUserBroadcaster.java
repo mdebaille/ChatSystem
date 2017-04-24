@@ -15,10 +15,11 @@ public class MessageUserBroadcaster extends Thread{
 		MessageUser mess = new MessageUser(myPseudo, myIP, myPort, MessageUser.typeConnect.CONNECTED);
 		String message = MessageUser.serializeMessage(mess);
 		this.packet = new DatagramPacket(message.getBytes(), message.length(), group, portMulticast);
+		this.connected = true;
 	}
 	
 	public void run(){
-		while(true){
+		while(connected){
 			try{
 				multicastSocket.send(packet);
 			}catch (IOException e){
@@ -33,5 +34,8 @@ public class MessageUserBroadcaster extends Thread{
 		}
 	}
 	
+	public void setConnected(boolean connected){
+		this.connected = connected;
+	}
 	
 }

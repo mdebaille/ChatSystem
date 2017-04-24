@@ -8,14 +8,16 @@ public class MulticastListener extends Thread{
 	
 	private DatagramSocket socket;
 	private UsersModel usersModel;
+	private boolean connected;
 	
 	public MulticastListener(DatagramSocket socket, UsersModel um){
 		this.socket = socket;
 		this.usersModel = um;
+		this.connected = true;
 	}
 	
 	public void run(){
-		while(true){
+		while(connected){
 			byte[] buf = new byte[256];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 			try{
@@ -47,5 +49,9 @@ public class MulticastListener extends Thread{
 			e.printStackTrace();
 			return new MessageUser(champs[0], null, Integer.parseInt(champs[2]), MessageUser.typeConnect.DISCONNECTED);
 		}
+	}
+	
+	public void setConnected(boolean connected){
+		this.connected = connected;
 	}
 }

@@ -3,6 +3,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 
 
@@ -41,14 +42,15 @@ public class ChatController {
 	private MainController mainController;
 	private String myPseudo;
 	private InfoUser infoDest;
-	private OutputStream os; 					// permet d'envoyer les messages
+	private ArrayList<OutputStream> listOs; 					// permet d'envoyer les messages
 	private boolean chatActive;					// indique si la fenetre de chat est ouverte ou non
 	private MessageListener messageListener; 	// gere la reception des messages => enregistrement dans la file de messages
 	private MessagesModel messagesModel;
 	
+	// construit un ChatController pour un chat entre 2 utilisateurs 
 	public ChatController(MainController mainController, InfoUser infoDest, Socket socketDest, String myPseudo){
 		try {
-			this.os = socketDest.getOutputStream();
+			this.listOs.add(socketDest.getOutputStream());
 			this.mainController = mainController;
 			this.myPseudo = myPseudo;
 			this.infoDest = infoDest;
@@ -61,11 +63,29 @@ public class ChatController {
 		}
 	}
 	
+	// construit un ChatController pour envoyer des messages a un groupe d'utilisateur
+	public ChatController(MainController mainController, ArrayList<Socket> listSocket, String myPseudo){
+		try {
+			for(Socket s: listSocket){
+				this.listOs.add(s.getOutputStream());
+			}
+			this.mainController = mainController;
+			this.myPseudo = myPseudo;
+			this.infoDest = null;
+			this.chatActive = false;
+			this.messagesModel = new MessagesModel(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void sendMessage(Message message){
 		try{
 			// serialisation et envoi du message
 			byte[] serializedMessage = Message.serializeMessage(message);
-			os.write(serializedMessage, 0, serializedMessage.length);
+			for(OutputStream os: listOs){
+				os.write(serializedMessage, 0, serializedMessage.length);
+			}
 			
 			// mise a jour du MessagesModel (ajout du message envoye)
 			String messageToSave;
@@ -76,7 +96,7 @@ public class ChatController {
 			}
 			messagesModel.addMessage(new Message(message.isTypeFile(), messageToSave.length(), messageToSave.getBytes()));
 		}catch(IOException e){
-			String messageToSave = "Echec de l'envoi: " + infoDest.getPseudo() + " est déconnecté(e).";
+			String messageToSave = "Echec de l'envoi: " + infoDest.getPseudo() + " est dï¿½connectï¿½(e).";
 			messagesModel.addMessage(new Message(false, messageToSave.getBytes().length, messageToSave.getBytes()));
 			System.out.println(e.getMessage());
 		}
