@@ -37,7 +37,7 @@ public class MainController {
 		listChatController = new HashMap<InetAddress, SingleChatController>();
 		connected = true;
 		networkManager = new NetworkManager(pseudo, this);
-		testIHM();
+		//testIHM();
 	}
 
 	public void Disconnect() {

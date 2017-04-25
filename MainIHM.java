@@ -271,7 +271,8 @@ private void changeFrameConnection(){
 	
 	public void notifyNewMessage(InetAddress ip){
 		for (int i=0; i<pList.getComponentCount(); i++){
-			JButton b = (JButton)pList.getComponent(i);
+			JComponent c = (JComponent)pList.getComponent(i);
+			JButton b = (JButton)c.getComponent(1);
 			JLabel l = (JLabel) b.getComponent(0);
 			if(l.getText().equals(ip.getHostAddress()) && b.getBackground().equals(Color.white)){
 				b.setBackground(Color.decode("#99ff66"));
