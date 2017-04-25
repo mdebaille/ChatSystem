@@ -16,22 +16,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UsersModel{
 	
 	final int refreshDelay = 6000; //6s
-	HashMap<InetAddress, InfoUser> listUser;
+	HashMap<UserId, InfoUser> listUser;
 	MainIHM ihm;
-	ConcurrentHashMap<InetAddress, Integer> listCompteurs;
+	ConcurrentHashMap<UserId, Integer> listCompteurs;
 	Timer timer;
 	MainController mainController;
 	
 	public UsersModel(final MainIHM ihm){
-		listUser = new HashMap<InetAddress, InfoUser>();
+		listUser = new HashMap<UserId, InfoUser>();
 		this.ihm = ihm;
-		listCompteurs = new ConcurrentHashMap<InetAddress, Integer>();
+		listCompteurs = new ConcurrentHashMap<UserId, Integer>();
 		
 		TimerTask update = new TimerTask() {
             public void run() {
-            	Iterator<Entry<InetAddress,Integer>> it = listCompteurs.entrySet().iterator();
+            	Iterator<Entry<UserId,Integer>> it = listCompteurs.entrySet().iterator();
             	while(it.hasNext()) {
-            	      Entry<InetAddress,Integer> entry = it.next();
+            	      Entry<UserId,Integer> entry = it.next();
             	      if(entry.getValue() == 0) {
             	    	  removeUser(entry.getKey());
             	    	  it.remove();
@@ -69,13 +69,13 @@ public class UsersModel{
 						System.out.println("Ajout de l'utilisateur " + mess.getPseudo());
 						InfoUser info = new InfoUser(mess.getPseudo(), mess.getIP(), mess.getPort());
 						addUser(info);
-						listCompteurs.put(mess.getIP(), 1);
+						listCompteurs.put(new UserId(mess.getIP(), mess.getPort()), 1);
 					}else{
-			        	listCompteurs.put(mess.getIP(), listCompteurs.get(mess.getIP())+1);
+			        	listCompteurs.put(new UserId(mess.getIP(), mess.getPort()), listCompteurs.get(mess.getIP())+1);
 					}
 				}else{
 					if(existInList(mess.getIP())){
-						removeUser(mess.getIP());
+						removeUser(new UserId(mess.getIP(), mess.getPort()));
 					}
 				}
 			}
@@ -84,28 +84,28 @@ public class UsersModel{
 		}
 	}
 	
-	public void removeUser(InetAddress ip){
-		InfoUser info = listUser.remove(ip);
+	public void removeUser(UserId id){
+		InfoUser info = listUser.remove(id);
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
     	ihm.removeUser(info);
-    	mainController.removeChatController(info.getIP());
+    	mainController.removeChatController(new UserId(info.getIP(), info.getPort()));
 	}
 	
 	public void addUser(InfoUser info){
-		listUser.put(info.getIP(), info);
+		listUser.put(new UserId(info.getIP(), info.getPort()), info);
 		ihm.addUser(info);
 	}
 	
-	public InfoUser getUser(InetAddress ip){
-		return listUser.get(ip);
+	public InfoUser getUser(UserId id){
+		return listUser.get(id);
 	}
 	
 	public void setMainController(MainController mc){
 		this.mainController = mc;
 	}
 	
-	public void notifyNewMessage(InetAddress ip){
-		ihm.notifyNewMessage(ip);
+	public void notifyNewMessage(UserId id){
+		ihm.notifyNewMessage(id);
 	}
 	
 }

@@ -12,7 +12,7 @@ public class MainController {
 
 	private String pseudo;
 	private UsersModel um;
-	private HashMap<InetAddress, SingleChatController> listChatController;
+	private HashMap<UserId, SingleChatController> listChatController;
 
 	private NetworkManager networkManager;
 
@@ -34,7 +34,7 @@ public class MainController {
 		this.pseudo = pseudo;
 		this.um = um;
 		um.setMainController(this);
-		listChatController = new HashMap<InetAddress, SingleChatController>();
+		listChatController = new HashMap<UserId, SingleChatController>();
 		connected = true;
 		networkManager = new NetworkManager(pseudo, this);
 		//testIHM();
@@ -48,30 +48,31 @@ public class MainController {
 
 	public void addChatController(Socket socketDest) {
 		InetAddress ipDest = socketDest.getInetAddress();
-		SingleChatController newChatController = new SingleChatController(this, um.getUser(ipDest), socketDest, pseudo);
-		listChatController.put(ipDest, newChatController);
+		UserId userId = new UserId(ipDest, socketDest.getPort());
+		SingleChatController newChatController = new SingleChatController(this, um.getUser(userId), socketDest, pseudo);
+		listChatController.put(userId, newChatController);
 	}
 
-	public void removeChatController(InetAddress ip) {
-		listChatController.remove(ip);
+	public void removeChatController(UserId id) {
+		listChatController.remove(id);
 	}
 
 	public boolean existChatController(InetAddress ip) {
 		return listChatController.containsKey(ip);
 	}
 
-	public void openChat(String ipAddress) {
+	public void openChat(UserId id) {
 		try {
-			InetAddress ip = InetAddress.getByName(ipAddress);
+			//InetAddress ip = InetAddress.getByName(ipAddress);
 
-			InfoUser dest = um.getUser(ip);
+			InfoUser dest = um.getUser(id);
 			System.out.println(dest.getPort());
-			if (!existChatController(ip)) {
-				Socket socket = new Socket(ip, dest.getPort());
+			if (!existChatController(id.getIP())) {
+				Socket socket = new Socket(id.getIP(), dest.getPort());
 				this.addChatController(socket);
 			}
 
-			ChatController chatController = listChatController.get(ip);
+			ChatController chatController = listChatController.get(id.getIP());
 			ChatIHM cIHM = new ChatIHM(pseudo, dest.getPseudo(), chatController);
 			chatController.linkModelToIHM(cIHM);
 
@@ -80,16 +81,16 @@ public class MainController {
 		}
 	}
 	
-	public void openGroupChat(ArrayList<String> listIpAddress){
+	public void openGroupChat(ArrayList<UserId> listUserId){
 		ArrayList<Socket> listSocket = new ArrayList<Socket>();
-		for(String ip: listIpAddress){
+		for(UserId id: listUserId){
 			try {
-				InetAddress ipAddress = InetAddress.getByName(ip);
-				InfoUser dest = um.getUser(ipAddress);
-				if(existChatController(ipAddress)){
-					listSocket.add(listChatController.get(ipAddress).getSocketDest());
+				//InetAddress ipAddress = InetAddress.getByName(ip);
+				InfoUser dest = um.getUser(id);
+				if(existChatController(id.getIP())){
+					listSocket.add(listChatController.get(id.getIP()).getSocketDest());
 				}else{
-					Socket socket = new Socket(ipAddress, dest.getPort());
+					Socket socket = new Socket(id.getIP(), dest.getPort());
 					listSocket.add(socket);
 					this.addChatController(socket);
 				}
@@ -102,8 +103,8 @@ public class MainController {
 		groupChatController.linkModelToIHM(cIHM);
 	}
 
-	public void notifyNewMessage(InetAddress ip) {
-		um.notifyNewMessage(ip);
+	public void notifyNewMessage(UserId id) {
+		um.notifyNewMessage(id);
 	}
 	
 	public UsersModel getUsersModel() {

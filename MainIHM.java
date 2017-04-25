@@ -11,11 +11,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 /*
  * notification qd message reÃ§u d'un certain user
@@ -44,7 +48,7 @@ public class MainIHM extends JFrame {
 	
 	int nbUsers;
 	
-	ArrayList<String> listGroup;
+	ArrayList<UserId> listGroup;
 	
 	public static void main(String[] args) {
 		MainIHM mainIHM = new MainIHM();
@@ -53,7 +57,7 @@ public class MainIHM extends JFrame {
 	
 	public MainIHM(){
 		this.nbUsers = 0;
-		listGroup = new ArrayList<String>();
+		listGroup = new ArrayList<UserId>();
 		initComponents();
 	}
 	
@@ -188,6 +192,11 @@ private void changeFrameConnection(){
 		hiddenIP.setVisible(false);
 		bName.add(hiddenIP);
 		
+		JLabel hiddenPort = new JLabel(Integer.toString(info.getPort())); 
+		hiddenPort.setVisible(false);
+		bName.add(hiddenPort);
+		
+		
 		bName.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				JButton button = (JButton)e.getSource();
@@ -211,8 +220,9 @@ private void changeFrameConnection(){
 		for (int i=0; i<pList.getComponentCount(); i++){
 			JPanel p = (JPanel)pList.getComponent(i);
 			JButton b = (JButton)p.getComponent(1);
-			JLabel l = (JLabel)b.getComponent(0);
-			if(l.getText().equals(info.getIP().getHostAddress())){
+			JLabel lIp = (JLabel)b.getComponent(0);
+			JLabel lPort = (JLabel)b.getComponent(1);
+			if(lIp.getText().equals(info.getIP().getHostAddress()) && Integer.parseInt(lPort.getText()) == info.getPort()){
 				pList.remove(i);
 			}
 		}
@@ -242,9 +252,16 @@ private void changeFrameConnection(){
 	}
 	
 	private void clickUser(JButton b){
-		JLabel ipLabel = (JLabel)b.getComponent(0);
-		mainController.openChat(ipLabel.getText());
-		System.out.println(ipLabel.getText());
+		JLabel labelIP = (JLabel)b.getComponent(0);
+		JLabel labelPort = (JLabel)b.getComponent(1);
+		try {
+			mainController.openChat(new UserId(InetAddress.getByName(labelIP.getText()), Integer.parseInt(labelPort.getText())));
+		} catch (NumberFormatException e) {
+			System.out.println(e.getMessage());
+		} catch (UnknownHostException e) {
+			System.out.println(e.getMessage());
+		}
+		System.out.println(labelIP.getText());
 		if(b.getBackground().equals(Color.decode("#99ff66"))){
 			b.setBackground(Color.white);
 		}
@@ -254,28 +271,34 @@ private void changeFrameConnection(){
 		JComponent cb = (JComponent) e.getSource();
 		Container panel = cb.getParent();
 		JButton b = (JButton) panel.getComponent(1);
-		JLabel label = (JLabel) b.getComponent(0);
-		if (e.getStateChange() == ItemEvent.DESELECTED){
-			if(listGroup.size() == 1){
-				bSendGroup.setEnabled(false);
+		JLabel labelIP = (JLabel) b.getComponent(0);
+		JLabel labelPort = (JLabel) b.getComponent(1);
+		try{
+			if (e.getStateChange() == ItemEvent.DESELECTED){
+				if(listGroup.size() == 1){
+					bSendGroup.setEnabled(false);
+				}
+				listGroup.remove(new UserId(InetAddress.getByName(labelIP.getText()), Integer.parseInt(labelPort.getText())));
+				System.out.println("Suppression de l'id [" + labelIP.getText() + ", " + labelPort.getText() + "] dans le  groupe");
+			}else{
+				if (listGroup.size() == 0){
+					bSendGroup.setEnabled(true);
+				}
+				listGroup.add(new UserId(InetAddress.getByName(labelIP.getText()), Integer.parseInt(labelPort.getText())));
+				System.out.println("Ajout de l'id [" + labelIP.getText() + ", " + labelPort.getText() + "] au  groupe");
 			}
-			listGroup.remove(label.getText());
-			System.out.println("Suppression de l'IP " + label.getText() + " dans le  groupe");
-		}else{
-			if (listGroup.size() == 0){
-				bSendGroup.setEnabled(true);
-			}
-			listGroup.add(label.getText());
-			System.out.println("Ajout de l'IP " + label.getText() + " au groupe");
+		}catch(UnknownHostException ex){
+			System.out.println(ex.getMessage());
 		}
 	}
 	
-	public void notifyNewMessage(InetAddress ip){
+	public void notifyNewMessage(UserId id){
 		for (int i=0; i<pList.getComponentCount(); i++){
 			JComponent c = (JComponent)pList.getComponent(i);
 			JButton b = (JButton)c.getComponent(1);
-			JLabel l = (JLabel) b.getComponent(0);
-			if(l.getText().equals(ip.getHostAddress()) && b.getBackground().equals(Color.white)){
+			JLabel lIp = (JLabel) b.getComponent(0);
+			JLabel lPort = (JLabel) b.getComponent(0);
+			if(lIp.getText().equals(id.getIP().getHostAddress()) && lPort.getText().equals(Integer.toString(id.getPort())) && b.getBackground().equals(Color.white)){
 				b.setBackground(Color.decode("#99ff66"));
 			}
 		}
