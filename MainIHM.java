@@ -47,8 +47,9 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 	ArrayList<String> listGroup;
 	
 	
-	public MainIHM(){
+	public MainIHM(MainController mc){
 		this.nbUsers = 0;
+		this.mainController = mc;
 		listGroup = new ArrayList<String>();
 		initComponents();
 	}
@@ -275,7 +276,4 @@ private void changeFrameConnection(){
 		}
 	}
 	
-	public void setMainController(MainController mc){
-		this.mainController = mc;
-	}
 }
