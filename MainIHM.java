@@ -209,7 +209,8 @@ private void changeFrameConnection(){
 		nbUsers--;
 		pList.setLayout(new GridLayout(nbUsers,1));
 		for (int i=0; i<pList.getComponentCount(); i++){
-			JButton b = (JButton)pList.getComponent(i);
+			JPanel p = (JPanel)pList.getComponent(i);
+			JButton b = (JButton)p.getComponent(1);
 			JLabel l = (JLabel)b.getComponent(0);
 			if(l.getText().equals(info.getIP().getHostAddress())){
 				pList.remove(i);

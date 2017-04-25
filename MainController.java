@@ -99,6 +99,7 @@ public class MainController {
 		}
 		GroupChatController groupChatController = new GroupChatController(this, listSocket, pseudo);
 		ChatIHM cIHM = new ChatIHM(pseudo, "Group", groupChatController);
+		groupChatController.linkModelToIHM(cIHM);
 	}
 
 	public void notifyNewMessage(InetAddress ip) {
