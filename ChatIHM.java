@@ -37,7 +37,6 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 	JTextArea taReceived;
 	
 	ChatController chatController;
-	//SwingWorker worker;	// pour faire du traitement en parallele de l'interface swing (affichage des messages)
 	
 	public ChatIHM(String myPseudo, final String destPseudo, final ChatController chatController){
 		System.out.println("cr�ation du chatIHM");
@@ -45,25 +44,8 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		this.destPseudo = destPseudo;
 		this.chatController = chatController;
 		
-		// doInBackground() s'execute dans un background thread associe a l'interface swing
-		/*this.worker = new SwingWorker<Void, Void>() {
-			@Override
-			protected Void doInBackground() throws Exception {
-				String lastLine = ""; 
-				while(!isCancelled()){	
-					lastLine = chatController.getLastLine(); // getLastLine() bloque tant qu'il n'y a pas de nouveau message � lire 
-					if(!lastLine.equals("")){
-						 System.out.println("Re�u: " +  lastLine);
-						 ChatIHM.this.printMessage(destPseudo + ": " + lastLine + "\n");
-					}
-				}
-				return null;
-			}
-		};*/
-		
 		initComponents();
 		chatController.setChatActive(true);
-		//worker.execute(); // lancement de doInBackground()
 	}
 
 	private void initComponents(){
@@ -140,9 +122,7 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		
 		// actionPerfomed du bouton de fermeture de la fenetre
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		       //worker.cancel(true); // isCancelled() va maintenant retourner true
 		       chatController.setChatActive(false);
 		    }
 		});
@@ -150,8 +130,6 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		
 	public void clickSend(){
 		chatController.sendMessage(new Message(false, taSend.getText().length(), taSend.getText().getBytes()));
-		//chatController.addMessage(taSend.getText() + "\n");
-		//printMessage(myPseudo + ": " + taSend.getText() + "\n");
 		taSend.setText("");
 	}
 	
@@ -170,13 +148,9 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 			e.printStackTrace();
 		}
 	}
-	
-	protected void printMessage(String msg){
-		taReceived.append(msg + "\n");
-	}
-	
+
 	public void updateMessage(byte[] message){
-		
+		taReceived.append(message + "\n");
 	}
 	
 	
