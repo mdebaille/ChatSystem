@@ -1,5 +1,6 @@
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,19 +14,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * Met à jour sa liste de user et quand mise à jour -> ajouter dans liste de IHM principale (appel de addUser et removeUser)
  */
 
-public class UsersModel{
+public class UsersModel implements ObservableListUsers{
 	
 	final int refreshDelay = 6000; //6s
 	HashMap<UserId, InfoUser> listUser;
-	MainIHM ihm;
 	ConcurrentHashMap<UserId, Integer> listCompteurs;
 	Timer timer;
-	MainController mainController;
-	
-	public UsersModel(final MainIHM ihm){
+	private ArrayList<ObserverListUsers> listObserver;
+
+	public UsersModel(){
 		listUser = new HashMap<UserId, InfoUser>();
-		this.ihm = ihm;
 		listCompteurs = new ConcurrentHashMap<UserId, Integer>();
+		listObserver = new ArrayList<ObserverListUsers>();
 		
 		TimerTask update = new TimerTask() {
             public void run() {
@@ -33,16 +33,11 @@ public class UsersModel{
             	while(it.hasNext()) {
             	      Entry<UserId,Integer> entry = it.next();
             	      if(entry.getValue() == 0) {
-            	    	  removeUser(entry.getKey());
+            	    	  notifyRemoveUser(entry.getKey());
             	    	  it.remove();
             	      }else{
               			listCompteurs.put(entry.getKey(), 0);
-              		} /*
-            	    try{
-	            	    Thread.sleep(2000);
-            	    }catch(InterruptedException e){
-            	    	System.out.println(e.getMessage());
-            	    }*/
+              		}
             	}
             }
         };
@@ -52,12 +47,6 @@ public class UsersModel{
 	}
 	
 	public boolean existInList(InetAddress IP){
-		/*for(InfoUser info : listUser){
-			if(info.getIP().equals(IP)){
-				return true;
-			}
-		}
-		return false;*/
 		return listUser.containsKey(IP);
 	}
 	
@@ -66,16 +55,15 @@ public class UsersModel{
 			if(!mess.getIP().equals(InetAddress.getLocalHost())){
 				if(mess.getEtat() == MessageUser.typeConnect.CONNECTED){
 					if(!existInList(mess.getIP())){
-						System.out.println("Ajout de l'utilisateur " + mess.getPseudo());
 						InfoUser info = new InfoUser(mess.getPseudo(), mess.getIP(), mess.getPort());
-						addUser(info);
+						notifyNewUser(info);
 						listCompteurs.put(new UserId(mess.getIP(), mess.getPort()), 1);
 					}else{
 			        	listCompteurs.put(new UserId(mess.getIP(), mess.getPort()), listCompteurs.get(mess.getIP())+1);
 					}
 				}else{
 					if(existInList(mess.getIP())){
-						removeUser(new UserId(mess.getIP(), mess.getPort()));
+						notifyRemoveUser(new UserId(mess.getIP(), mess.getPort()));
 					}
 				}
 			}
@@ -84,28 +72,42 @@ public class UsersModel{
 		}
 	}
 	
-	public void removeUser(UserId id){
+	public void notifyRemoveUser(UserId id){
 		InfoUser info = listUser.remove(id);
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
-    	ihm.removeUser(info);
-    	mainController.removeChatController(new UserId(info.getIP(), info.getPort()));
+    	//mainController.removeChatController(new UserId(info.getIP(), info.getPort()));
+    	for(ObserverListUsers obs: listObserver){
+    		obs.removeUser(id);
+    	}
 	}
 	
-	public void addUser(InfoUser info){
+	public void notifyNewUser(InfoUser info){
 		listUser.put(new UserId(info.getIP(), info.getPort()), info);
-		ihm.addUser(info);
+		for(ObserverListUsers obs: listObserver){
+    		obs.addUser(info);
+    	}
 	}
 	
 	public InfoUser getUser(UserId id){
 		return listUser.get(id);
 	}
-	
+	/*
 	public void setMainController(MainController mc){
 		this.mainController = mc;
 	}
-	
+	*/
 	public void notifyNewMessage(UserId id){
-		ihm.notifyNewMessage(id);
+		for(ObserverListUsers obs: listObserver){
+    		obs.newMessage(id);
+    	}
+	}
+	
+	public void addObserver(ObserverListUsers obs){
+		this.listObserver.add(obs);
+	}
+	
+	public void removeObserver(ObserverListUsers obs){
+		this.listObserver.remove(obs);
 	}
 	
 }

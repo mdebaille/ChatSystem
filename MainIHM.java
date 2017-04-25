@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
 /*
  * notification qd message reÃ§u d'un certain user
  */
@@ -28,7 +24,7 @@ import java.util.Map.Entry;
 
 
 
-public class MainIHM extends JFrame {
+public class MainIHM extends JFrame implements ObserverListUsers {
 	
 	String myUsername;
 	
@@ -49,10 +45,6 @@ public class MainIHM extends JFrame {
 	int nbUsers;
 	
 	ArrayList<UserId> listGroup;
-	
-	public static void main(String[] args) {
-		MainIHM mainIHM = new MainIHM();
-	}
 	
 	
 	public MainIHM(){
@@ -214,7 +206,7 @@ private void changeFrameConnection(){
 		pList.repaint();
 	}
 	
-	public void removeUser(InfoUser info){
+	public void removeUser(UserId id){
 		nbUsers--;
 		pList.setLayout(new GridLayout(nbUsers,1));
 		for (int i=0; i<pList.getComponentCount(); i++){
@@ -222,7 +214,7 @@ private void changeFrameConnection(){
 			JButton b = (JButton)p.getComponent(1);
 			JLabel lIp = (JLabel)b.getComponent(0);
 			JLabel lPort = (JLabel)b.getComponent(1);
-			if(lIp.getText().equals(info.getIP().getHostAddress()) && Integer.parseInt(lPort.getText()) == info.getPort()){
+			if(lIp.getText().equals(id.getIP().getHostAddress()) && Integer.parseInt(lPort.getText()) == id.getPort()){
 				pList.remove(i);
 			}
 		}
@@ -236,8 +228,7 @@ private void changeFrameConnection(){
 			System.out.println("Le pseudo ne doit pas contenir le caract�re '#'");
 		}else{
 			changeFrameConnection();
-			UsersModel um = new UsersModel(this);
-			this.mainController = new MainController(myUsername, um);
+		//	this.mainController = new MainController(myUsername, um);
 		}
 	}
 	
@@ -292,12 +283,12 @@ private void changeFrameConnection(){
 		}
 	}
 	
-	public void notifyNewMessage(UserId id){
+	public void newMessage(UserId id){
 		for (int i=0; i<pList.getComponentCount(); i++){
 			JComponent c = (JComponent)pList.getComponent(i);
 			JButton b = (JButton)c.getComponent(1);
 			JLabel lIp = (JLabel) b.getComponent(0);
-			JLabel lPort = (JLabel) b.getComponent(0);
+			JLabel lPort = (JLabel) b.getComponent(1);
 			if(lIp.getText().equals(id.getIP().getHostAddress()) && lPort.getText().equals(Integer.toString(id.getPort())) && b.getBackground().equals(Color.white)){
 				b.setBackground(Color.decode("#99ff66"));
 			}

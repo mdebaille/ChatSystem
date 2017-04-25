@@ -33,7 +33,6 @@ public class MainController {
 	public MainController(String pseudo, UsersModel um) {
 		this.pseudo = pseudo;
 		this.um = um;
-		um.setMainController(this);
 		listChatController = new HashMap<UserId, SingleChatController>();
 		connected = true;
 		networkManager = new NetworkManager(pseudo, this);
