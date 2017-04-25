@@ -22,7 +22,7 @@ public class MulticastListener extends Thread{
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 			try{
 				socket.receive(packet);	// bloque le thread, attend la reception d'un packet datagramme
-				System.out.println(new String(packet.getData(), 0, packet.getLength()));
+				//System.out.println(new String(packet.getData(), 0, packet.getLength()));
 				MessageUser msgReceived = deserializeMessage(new String(packet.getData(), 0, packet.getLength())); // deserialiser le contenu du datagram packet recu
 				usersModel.receivedMessageUser(msgReceived); // mise a jour de la liste des users suivant le message
 			}catch(IOException e){

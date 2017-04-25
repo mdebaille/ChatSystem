@@ -88,7 +88,7 @@ public class MainController implements ObserverListUsers{
 				InetAddress ipAddress = InetAddress.getByName(ip);
 				InfoUser dest = um.getUser(ipAddress);
 				if(existChatController(ipAddress)){
-					listSocket.add(listChatController.get(ip).getSocketDest());
+					listSocket.add(listChatController.get(ipAddress).getSocketDest());
 				}else{
 					Socket socket = new Socket(ip, dest.getPort());
 					listSocket.add(socket);
