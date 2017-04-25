@@ -28,7 +28,7 @@ import javax.swing.border.EmptyBorder;
  *   
  */
 
-public class ChatIHM extends JFrame{
+public class ChatIHM extends JFrame implements ObserverMessages{
 
 	String destPseudo;
 	String myPseudo;
@@ -173,6 +173,10 @@ public class ChatIHM extends JFrame{
 	
 	protected void printMessage(String msg){
 		taReceived.append(msg + "\n");
+	}
+	
+	public void updateMessage(byte[] message){
+		
 	}
 	
 	

@@ -22,7 +22,7 @@ public class MessageListener extends Thread{
 		while(true){ 
 			try {
 				readData();
-				if(!chatController.isChatActive()){
+				if(!chatController.getChatActive()){
 					chatController.notifyNewMessage();
 				}
 			} catch (IOException e) {
@@ -59,4 +59,5 @@ public class MessageListener extends Thread{
 			byteOStream.reset();
 		}
 	}
+	
 }

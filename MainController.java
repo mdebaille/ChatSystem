@@ -74,7 +74,7 @@ public class MainController implements ObserverListUsers{
 
 			ChatController chatController = listChatController.get(ip);
 			ChatIHM cIHM = new ChatIHM(pseudo, dest.getPseudo(), chatController);
-			chatController.linkModelToIHM(cIHM);
+			chatController.addObservertoModel(cIHM);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -100,7 +100,7 @@ public class MainController implements ObserverListUsers{
 		}
 		GroupChatController groupChatController = new GroupChatController(this, listSocket, pseudo);
 		ChatIHM cIHM = new ChatIHM(pseudo, "Group", groupChatController);
-		groupChatController.linkModelToIHM(cIHM);
+		groupChatController.addObservertoModel(cIHM);
 	}
 
 	public void notifyNewMessage(InetAddress ip) {

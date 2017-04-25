@@ -1,35 +1,53 @@
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class MessagesModel {
+public class MessagesModel implements ObservableMessages {
 	
 	private ConcurrentLinkedQueue<Message> listMessages;
-	private ChatIHM chatIHM;
-	private ChatController chatController;
+	private boolean chatActive;
+	private ArrayList<ObserverMessages> listObserver;
 	
-	public MessagesModel(ChatController cc){
+	public MessagesModel(){
 		listMessages = new ConcurrentLinkedQueue<Message>();
-		chatIHM = null;
-		chatController = cc;
+		listObserver = new ArrayList<ObserverMessages>();
+		chatActive = false;
 	}
 	
-	public void setChatIHM(ChatIHM ihm){
-		chatIHM = ihm;
-		while(!chatController.isChatActive()){}
+	public void addObserver(ObserverMessages obs){
+		listObserver.add(obs);
+		recordMessages();
+	}
+	
+	public void removeObserver(ObserverMessages obs){
+		listObserver.remove(obs);
+	}
+	
+	public void notifyMessage(byte[] message){
+		for(ObserverMessages obs : listObserver){
+			obs.updateMessage(message);
+		}
+	}
+	
+	private void recordMessages(){
+		while(!chatActive){}
 		Iterator<Message> it = listMessages.iterator();
 		while(it.hasNext()){
 			Message message = it.next();
-			chatIHM.printMessage(new String(message.getData()));
-			
+			notifyMessage(message.getData());
 		}
 	}
 	
 	public void addMessage(Message message){
 		listMessages.add(message);
-		if(chatController.isChatActive()){
-			chatIHM.printMessage(new String(message.getData()));
+		if(chatActive){
+			notifyMessage(message.getData());
 		}
+	}
+	
+	public void setChatActive(boolean b){
+		this.chatActive = b;
 	}
 	
 }
