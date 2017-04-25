@@ -10,6 +10,7 @@ public class GroupChatController extends ChatController{
 	
 	public GroupChatController(MainController mc, ArrayList<Socket> listSocket, String myPseudo){
 		super(mc, myPseudo);
+		listOs = new ArrayList<OutputStream>();
 		for(Socket s: listSocket){
 			try {
 				listOs.add(s.getOutputStream());
