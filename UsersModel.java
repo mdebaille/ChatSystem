@@ -75,7 +75,6 @@ public class UsersModel implements ObservableListUsers{
 	public void notifyRemoveUser(UserId id){
 		InfoUser info = listUser.remove(id);
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
-    	//mainController.removeChatController(new UserId(info.getIP(), info.getPort()));
     	for(ObserverListUsers obs: listObserver){
     		obs.removeUser(id);
     	}
@@ -91,11 +90,7 @@ public class UsersModel implements ObservableListUsers{
 	public InfoUser getUser(UserId id){
 		return listUser.get(id);
 	}
-	/*
-	public void setMainController(MainController mc){
-		this.mainController = mc;
-	}
-	*/
+
 	public void notifyNewMessage(UserId id){
 		for(ObserverListUsers obs: listObserver){
     		obs.newMessage(id);

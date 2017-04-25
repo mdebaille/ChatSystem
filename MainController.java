@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainController {
+public class MainController implements ObserverListUsers{
 
 	private String pseudo;
 	private UsersModel um;
@@ -30,13 +30,15 @@ public class MainController {
 	 * MainController mainController = new MainController(); }
 	 */
 
-	public MainController(String pseudo, UsersModel um) {
-		this.pseudo = pseudo;
+	public MainController(UsersModel um){
 		this.um = um;
+	}
+	
+	public void Connect(String pseudo){
+		this.pseudo = pseudo;
 		listChatController = new HashMap<UserId, SingleChatController>();
 		connected = true;
 		networkManager = new NetworkManager(pseudo, this);
-		//testIHM();
 	}
 
 	public void Disconnect() {
@@ -52,7 +54,7 @@ public class MainController {
 		listChatController.put(userId, newChatController);
 	}
 
-	public void removeChatController(UserId id) {
+	private void removeChatController(UserId id) {
 		listChatController.remove(id);
 	}
 
@@ -162,5 +164,11 @@ public class MainController {
 		timer.schedule(task1, 2000, 2000);
 		timer.schedule(task2, 6000, 2000);
 	}
+	
+	public void addUser(InfoUser info){}
+	public void removeUser(UserId id){
+		removeChatController(id);
+	}
+	public void newMessage(UserId id){}
 
 }
