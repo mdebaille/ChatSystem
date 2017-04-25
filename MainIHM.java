@@ -44,12 +44,12 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 	
 	int nbUsers;
 	
-	ArrayList<UserId> listGroup;
+	ArrayList<String> listGroup;
 	
 	
 	public MainIHM(){
 		this.nbUsers = 0;
-		listGroup = new ArrayList<UserId>();
+		listGroup = new ArrayList<String>();
 		initComponents();
 	}
 	
@@ -184,11 +184,6 @@ private void changeFrameConnection(){
 		hiddenIP.setVisible(false);
 		bName.add(hiddenIP);
 		
-		JLabel hiddenPort = new JLabel(Integer.toString(info.getPort())); 
-		hiddenPort.setVisible(false);
-		bName.add(hiddenPort);
-		
-		
 		bName.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				JButton button = (JButton)e.getSource();
@@ -206,15 +201,14 @@ private void changeFrameConnection(){
 		pList.repaint();
 	}
 	
-	public void removeUser(UserId id){
+	public void removeUser(InetAddress ip){
 		nbUsers--;
 		pList.setLayout(new GridLayout(nbUsers,1));
 		for (int i=0; i<pList.getComponentCount(); i++){
 			JPanel p = (JPanel)pList.getComponent(i);
 			JButton b = (JButton)p.getComponent(1);
 			JLabel lIp = (JLabel)b.getComponent(0);
-			JLabel lPort = (JLabel)b.getComponent(1);
-			if(lIp.getText().equals(id.getIP().getHostAddress()) && Integer.parseInt(lPort.getText()) == id.getPort()){
+			if(lIp.getText().equals(ip.getHostAddress())){
 				pList.remove(i);
 			}
 		}
@@ -228,7 +222,7 @@ private void changeFrameConnection(){
 			System.out.println("Le pseudo ne doit pas contenir le caract�re '#'");
 		}else{
 			changeFrameConnection();
-		//	this.mainController = new MainController(myUsername, um);
+			mainController.Connect(myUsername);
 		}
 	}
 	
@@ -244,15 +238,7 @@ private void changeFrameConnection(){
 	
 	private void clickUser(JButton b){
 		JLabel labelIP = (JLabel)b.getComponent(0);
-		JLabel labelPort = (JLabel)b.getComponent(1);
-		try {
-			mainController.openChat(new UserId(InetAddress.getByName(labelIP.getText()), Integer.parseInt(labelPort.getText())));
-		} catch (NumberFormatException e) {
-			System.out.println(e.getMessage());
-		} catch (UnknownHostException e) {
-			System.out.println(e.getMessage());
-		}
-		System.out.println(labelIP.getText());
+		mainController.openChat(labelIP.getText());
 		if(b.getBackground().equals(Color.decode("#99ff66"))){
 			b.setBackground(Color.white);
 		}
@@ -263,35 +249,33 @@ private void changeFrameConnection(){
 		Container panel = cb.getParent();
 		JButton b = (JButton) panel.getComponent(1);
 		JLabel labelIP = (JLabel) b.getComponent(0);
-		JLabel labelPort = (JLabel) b.getComponent(1);
-		try{
-			if (e.getStateChange() == ItemEvent.DESELECTED){
-				if(listGroup.size() == 1){
-					bSendGroup.setEnabled(false);
-				}
-				listGroup.remove(new UserId(InetAddress.getByName(labelIP.getText()), Integer.parseInt(labelPort.getText())));
-				System.out.println("Suppression de l'id [" + labelIP.getText() + ", " + labelPort.getText() + "] dans le  groupe");
-			}else{
-				if (listGroup.size() == 0){
-					bSendGroup.setEnabled(true);
-				}
-				listGroup.add(new UserId(InetAddress.getByName(labelIP.getText()), Integer.parseInt(labelPort.getText())));
-				System.out.println("Ajout de l'id [" + labelIP.getText() + ", " + labelPort.getText() + "] au  groupe");
+		if (e.getStateChange() == ItemEvent.DESELECTED){
+			if(listGroup.size() == 1){
+				bSendGroup.setEnabled(false);
 			}
-		}catch(UnknownHostException ex){
-			System.out.println(ex.getMessage());
+			listGroup.remove(labelIP.getText());
+			System.out.println("Suppression de l'ip " + labelIP.getText() + " dans le  groupe");
+		}else{
+			if (listGroup.size() == 0){
+				bSendGroup.setEnabled(true);
+			}
+			listGroup.add(labelIP.getText());
+			System.out.println("Ajout de l'ip" + labelIP.getText() + " au  groupe");
 		}
 	}
 	
-	public void newMessage(UserId id){
+	public void newMessage(InetAddress ip){
 		for (int i=0; i<pList.getComponentCount(); i++){
 			JComponent c = (JComponent)pList.getComponent(i);
 			JButton b = (JButton)c.getComponent(1);
 			JLabel lIp = (JLabel) b.getComponent(0);
-			JLabel lPort = (JLabel) b.getComponent(1);
-			if(lIp.getText().equals(id.getIP().getHostAddress()) && lPort.getText().equals(Integer.toString(id.getPort())) && b.getBackground().equals(Color.white)){
+			if(lIp.getText().equals(ip.getHostAddress()) && b.getBackground().equals(Color.white)){
 				b.setBackground(Color.decode("#99ff66"));
 			}
 		}
+	}
+	
+	public void setMainController(MainController mc){
+		this.mainController = mc;
 	}
 }

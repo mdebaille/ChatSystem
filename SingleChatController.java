@@ -47,7 +47,7 @@ public class SingleChatController extends ChatController{
 	}
 	
 	public void notifyNewMessage(){
-		mainController.notifyNewMessage(new UserId(infoDest.getIP(), infoDest.getPort()));
+		mainController.notifyNewMessage(infoDest.getIP());
 	}
 	
 	public InfoUser getInfoDest(){

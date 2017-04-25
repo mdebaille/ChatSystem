@@ -17,21 +17,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UsersModel implements ObservableListUsers{
 	
 	final int refreshDelay = 6000; //6s
-	HashMap<UserId, InfoUser> listUser;
-	ConcurrentHashMap<UserId, Integer> listCompteurs;
+	HashMap<InetAddress, InfoUser> listUser;
+	ConcurrentHashMap<InetAddress, Integer> listCompteurs;
 	Timer timer;
 	private ArrayList<ObserverListUsers> listObserver;
 
 	public UsersModel(){
-		listUser = new HashMap<UserId, InfoUser>();
-		listCompteurs = new ConcurrentHashMap<UserId, Integer>();
+		listUser = new HashMap<InetAddress, InfoUser>();
+		listCompteurs = new ConcurrentHashMap<InetAddress, Integer>();
 		listObserver = new ArrayList<ObserverListUsers>();
 		
 		TimerTask update = new TimerTask() {
             public void run() {
-            	Iterator<Entry<UserId,Integer>> it = listCompteurs.entrySet().iterator();
+            	Iterator<Entry<InetAddress,Integer>> it = listCompteurs.entrySet().iterator();
             	while(it.hasNext()) {
-            	      Entry<UserId,Integer> entry = it.next();
+            	      Entry<InetAddress,Integer> entry = it.next();
             	      if(entry.getValue() == 0) {
             	    	  notifyRemoveUser(entry.getKey());
             	    	  it.remove();
@@ -46,8 +46,8 @@ public class UsersModel implements ObservableListUsers{
         timer.schedule(update, refreshDelay, refreshDelay);
 	}
 	
-	public boolean existInList(InetAddress IP){
-		return listUser.containsKey(IP);
+	public boolean existInList(InetAddress ip){
+		return listUser.containsKey(ip);
 	}
 	
 	public void receivedMessageUser(final MessageUser mess){
@@ -57,13 +57,13 @@ public class UsersModel implements ObservableListUsers{
 					if(!existInList(mess.getIP())){
 						InfoUser info = new InfoUser(mess.getPseudo(), mess.getIP(), mess.getPort());
 						notifyNewUser(info);
-						listCompteurs.put(new UserId(mess.getIP(), mess.getPort()), 1);
+						listCompteurs.put(mess.getIP(), 1);
 					}else{
-			        	listCompteurs.put(new UserId(mess.getIP(), mess.getPort()), listCompteurs.get(mess.getIP())+1);
+			        	listCompteurs.put(mess.getIP(), listCompteurs.get(mess.getIP())+1);
 					}
 				}else{
 					if(existInList(mess.getIP())){
-						notifyRemoveUser(new UserId(mess.getIP(), mess.getPort()));
+						notifyRemoveUser(mess.getIP());
 					}
 				}
 			}
@@ -72,28 +72,28 @@ public class UsersModel implements ObservableListUsers{
 		}
 	}
 	
-	public void notifyRemoveUser(UserId id){
-		InfoUser info = listUser.remove(id);
-    	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
+	public void notifyRemoveUser(InetAddress ip){
+		InfoUser info = listUser.remove(ip);
+    	//System.out.println("Suppression de l'utilisateur " + info.getPseudo());
     	for(ObserverListUsers obs: listObserver){
-    		obs.removeUser(id);
+    		obs.removeUser(ip);
     	}
 	}
 	
 	public void notifyNewUser(InfoUser info){
-		listUser.put(new UserId(info.getIP(), info.getPort()), info);
+		listUser.put(info.getIP(), info);
 		for(ObserverListUsers obs: listObserver){
     		obs.addUser(info);
     	}
 	}
 	
-	public InfoUser getUser(UserId id){
-		return listUser.get(id);
+	public InfoUser getUser(InetAddress ip){
+		return listUser.get(ip);
 	}
 
-	public void notifyNewMessage(UserId id){
+	public void notifyNewMessage(InetAddress ip){
 		for(ObserverListUsers obs: listObserver){
-    		obs.newMessage(id);
+    		obs.newMessage(ip);
     	}
 	}
 	
