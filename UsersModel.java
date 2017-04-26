@@ -74,6 +74,7 @@ public class UsersModel implements ObservableListUsers{
 	
 	public void notifyRemoveUser(InetAddress ip){
 		InfoUser info = listUser.remove(ip);
+		listCompteurs.remove(ip);
     	System.out.println("Suppression de l'utilisateur " + info.getPseudo());
     	for(ObserverListUsers obs: listObserver){
     		obs.removeUser(ip);

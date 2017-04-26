@@ -44,7 +44,7 @@ public class NetworkManager {
 			multicastListener.start();
 			
 		}catch(IOException e){
-			System.out.println(e.getMessage());
+			System.out.println("NetworkManager: " + e.getMessage());
 		}
 	}
 	
@@ -67,6 +67,11 @@ public class NetworkManager {
 		messageUserBroadcaster.setConnected(false);
 		acceptLoop.setConnected(false);
 		multicastListener.setConnected(false);
+		try {
+			servSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

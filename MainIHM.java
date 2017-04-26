@@ -229,7 +229,6 @@ private void changeFrameConnection(){
 	private void clickDisconnect(){
 		changeFrameDisconnection();
 		mainController.Disconnect();
-		mainController = null;
 	}
 	
 	private void clickSendGroup(){

@@ -6,6 +6,7 @@ public class Main {
 		MainController mainController = new MainController(usersModel);
 		MainIHM mainIHM = new MainIHM(mainController);
 		usersModel.addObserver(mainIHM);
+		usersModel.addObserver(mainController);
 	}
 
 }

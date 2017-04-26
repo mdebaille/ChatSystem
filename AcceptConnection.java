@@ -15,18 +15,20 @@ public class AcceptConnection extends Thread{
 	}
 	
 	public void run(){
+		Socket socket = null;
 		while(connected){
 			try{
-				Socket socket = serverSocket.accept();
+				socket = serverSocket.accept();
 				networkManager.addChannel(socket);
 				System.out.println("Connection acceptée.");
 			}catch(IOException e){
-				System.out.println("AcceptConnection: " + e.getMessage());
+				System.out.println("AcceptConnection: servSocket fermé");
 			}
 		}
 	}
 	
 	public void setConnected(boolean connected){
+		System.out.println("AcceptConnexion: connected = false");
 		this.connected = connected;
 	}
 }

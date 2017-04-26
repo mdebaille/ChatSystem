@@ -150,7 +150,7 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 	}
 
 	public void updateMessage(byte[] message){
-		taReceived.append(message + "\n");
+		taReceived.append(new String(message) + "\n");
 	}
 	
 	
