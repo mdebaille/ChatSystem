@@ -28,7 +28,9 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 	String myUsername;
 	
 	JPanel pInputUsername;
+	JPanel pError;
 	JPanel pConnect;
+	
 	JPanel pList;
 	
 	JTextArea taUsername;
@@ -59,12 +61,15 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 		
 		pInputUsername = new JPanel();
 		pInputUsername.setLayout(new BoxLayout(pInputUsername, BoxLayout.X_AXIS));
-		pInputUsername.setBorder(new EmptyBorder(20, 20, 20, 20));	
+		pInputUsername.setBorder(new EmptyBorder(20, 20, 10, 20));	
 		JLabel lUsername = new JLabel("Username: ");
 		lUsername.setBorder(new EmptyBorder(0,10,0,10));
 		taUsername = new JTextArea(1,15);
 		pInputUsername.add(lUsername);
 		pInputUsername.add(taUsername);
+		
+		pError = new JPanel(new BorderLayout());
+		pError.setBorder(new EmptyBorder(0, 30, 0, 30));
 		
 		pConnect = new JPanel(new BorderLayout());
 		pConnect.setBorder(new EmptyBorder(10, 60, 20, 60));
@@ -72,9 +77,10 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 		pConnect.add(bConnect, BorderLayout.CENTER);
 		
 		
-		this.setLayout(new GridLayout(2, 1));
+		this.setLayout(new GridLayout(3, 1));
 		this.add("1", pInputUsername);
-		this.add("2", pConnect);
+		this.add("2", pError);
+		this.add("3", pConnect);
 		
 		this.pack();
 		this.setVisible(true);
@@ -133,6 +139,7 @@ private void changeFrameConnection(){
 		
 		this.remove(pInputUsername);
 		this.remove(pConnect);
+		this.remove(pError);
 		
 		this.setLayout(new GridBagLayout());;
 		this.add(lMyUsername, cUsername);
@@ -218,9 +225,21 @@ private void changeFrameConnection(){
 
 	private void clickConnect(){
 		myUsername = taUsername.getText();
-		if(myUsername.contains("#")){
-			System.out.println("Le pseudo ne doit pas contenir le caract�re '#'");
-		}else{
+		pError.removeAll();
+		if(myUsername.contains("#") || myUsername.equals("")){
+			JLabel lError = null;
+			if(myUsername.contains("#") ){
+				lError = new JLabel("Caractère '#' interdit");
+			} else{
+				lError = new JLabel("Erreur : pseudo vide");
+			}
+			lError.setForeground(Color.red);
+			pError.add(lError, BorderLayout.CENTER);
+			pError.revalidate();
+			pError.repaint();
+			
+		}
+		else{
 			changeFrameConnection();
 			mainController.Connect(myUsername);
 		}
