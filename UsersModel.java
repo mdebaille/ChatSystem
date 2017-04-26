@@ -105,5 +105,9 @@ public class UsersModel implements ObservableListUsers{
 	public void removeObserver(ObserverListUsers obs){
 		this.listObserver.remove(obs);
 	}
+
+	public int getModelSize() {
+		return listUser.size();
+	}
 	
 }
