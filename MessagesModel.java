@@ -49,5 +49,9 @@ public class MessagesModel implements ObservableMessages {
 	public void setChatActive(boolean b){
 		this.chatActive = b;
 	}
+
+	public int getModelSize() {
+		return listMessages.size();
+	}
 	
 }
