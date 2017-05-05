@@ -38,8 +38,11 @@ public class TestMessagesModel {
 	@Test
 	public void testAddMessage(){
 		
+<<<<<<< HEAD
 		System.out.println("Ajout de 4 messages avec fenï¿½tre de chat fermï¿½e");
-
+=======
+		System.out.println("Ajout de 4 messages avec fenêtre de chat fermée");
+>>>>>>> f5d17a686da08f43577c01f6738c164d3613ae50
 
 		messagesModel.setChatActive(false);
 		messagesModel.addMessage(msg1);
@@ -49,8 +52,12 @@ public class TestMessagesModel {
 		assertEquals(3, messagesModel.getModelSize());
 		
 		//----------------------------------------------------------------------
-
+		
+<<<<<<< HEAD
 		System.out.println("Ouverture d'une fenï¿½tre de chat");
+=======
+		System.out.println("Ouverture d'une fenêtre de chat");
+>>>>>>> f5d17a686da08f43577c01f6738c164d3613ae50
 		
 		messagesModel.setChatActive(true);
 		messagesModel.addObserver(chatIHM1);
@@ -59,10 +66,19 @@ public class TestMessagesModel {
 		verify(chatIHM1).updateMessage(eq("aaaa".getBytes()));
 		verify(chatIHM1).updateMessage(eq("bbbb".getBytes()));
 		verify(chatIHM1).updateMessage(eq("cccc".getBytes()));
+<<<<<<< HEAD
+		//verify(chatIHM1, times(3)).updateMessage(any());
+		
+		//----------------------------------------------------------------------
+		
+		System.out.println("Ajout de 2 messages avec fenï¿½tre de chat ouverte");
+=======
+		verify(chatIHM1, times(3)).updateMessage(any());
 		
 		//----------------------------------------------------------------------
 		
 		System.out.println("Ajout de 2 messages avec fenêtre de chat ouverte");
+>>>>>>> f5d17a686da08f43577c01f6738c164d3613ae50
 
 		messagesModel.addMessage(msg4);
 		messagesModel.addMessage(msg5);
@@ -73,8 +89,11 @@ public class TestMessagesModel {
 		
 		//----------------------------------------------------------------------
 		
+<<<<<<< HEAD
 		System.out.println("Ajout d'un nouvel ObserverMessages sur le modï¿½le");
-
+=======
+		System.out.println("Ajout d'un nouvel ObserverMessages sur le modèle");
+>>>>>>> f5d17a686da08f43577c01f6738c164d3613ae50
 		
 		messagesModel.setChatActive(true);
 		messagesModel.addObserver(chatIHM2);
@@ -84,11 +103,19 @@ public class TestMessagesModel {
 		verify(chatIHM2).updateMessage(eq("cccc".getBytes()));
 		verify(chatIHM2).updateMessage(eq("dddd".getBytes()));
 		verify(chatIHM2).updateMessage(eq("eeee".getBytes()));
+<<<<<<< HEAD
+		//verify(chatIHM2, times(5)).updateMessage(any());
 		
 		//----------------------------------------------------------------------
 		
 		System.out.println("Ajout de 2 messages avec fenï¿½tre de chat ouverte");
-
+=======
+		verify(chatIHM2, times(5)).updateMessage(any());
+		
+		//----------------------------------------------------------------------
+		
+		System.out.println("Ajout de 2 messages avec fenêtre de chat ouverte");
+>>>>>>> f5d17a686da08f43577c01f6738c164d3613ae50
 
 		messagesModel.addMessage(msg6);
 		messagesModel.addMessage(msg7);
