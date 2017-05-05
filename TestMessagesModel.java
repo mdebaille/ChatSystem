@@ -35,11 +35,74 @@ public class TestMessagesModel {
 		messagesModel = new MessagesModel();
 	}
 	
+	
+	@Test
+	public void testAdd1000Message(){
+		
+		System.out.println("Ajout de 1000 messages avec fenï¿½tre de chat fermï¿½e");
+
+		messagesModel.setChatActive(false);
+		for(int i = 0; i < 1000; i++){
+			messagesModel.addMessage(msg1);
+		}
+		
+		assertEquals(1000, messagesModel.getModelSize());
+		
+		//----------------------------------------------------------------------
+		
+		System.out.println("Ouverture d'une fenï¿½tre de chat");
+		
+		messagesModel.setChatActive(true);
+		messagesModel.addObserver(chatIHM1);
+		
+		assertEquals(1000, messagesModel.getModelSize());
+		verify(chatIHM1, atLeast(1000)).updateMessage(eq("aaaa".getBytes()));
+		verify(chatIHM1, atMost(1000)).updateMessage(eq("aaaa".getBytes()));
+		
+		//----------------------------------------------------------------------
+		
+		System.out.println("Ajout de 1000 messages avec fenï¿½tre de chat ouverte");
+
+		for(int i = 0; i < 1000; i++){
+			messagesModel.addMessage(msg1);
+		}
+		
+		assertEquals(2000, messagesModel.getModelSize());
+		verify(chatIHM1, atLeast(2000)).updateMessage(eq("aaaa".getBytes()));
+		verify(chatIHM1, atMost(2000)).updateMessage(eq("aaaa".getBytes()));
+		
+		//----------------------------------------------------------------------
+		
+		System.out.println("Ajout d'un nouvel ObserverMessages sur le modï¿½le");
+		
+		messagesModel.addObserver(chatIHM2);
+		
+		assertEquals(2000, messagesModel.getModelSize());
+		verify(chatIHM1, atLeast(4000)).updateMessage(eq("aaaa".getBytes()));
+		verify(chatIHM1, atMost(4000)).updateMessage(eq("aaaa".getBytes()));
+		verify(chatIHM2, atLeast(2000)).updateMessage(eq("aaaa".getBytes()));
+		verify(chatIHM2, atMost(2000)).updateMessage(eq("aaaa".getBytes()));
+		
+		//----------------------------------------------------------------------
+		
+		System.out.println("Ajout de 1000 messages avec fenï¿½tre de chat ouverte");
+
+		for(int i = 0; i < 1000; i++){
+			messagesModel.addMessage(msg1);
+		}
+		
+		assertEquals(3000, messagesModel.getModelSize());
+		verify(chatIHM1, atLeast(5000)).updateMessage(eq("aaaa".getBytes()));
+		verify(chatIHM1, atMost(5000)).updateMessage(eq("aaaa".getBytes()));
+		verify(chatIHM2, atLeast(3000)).updateMessage(eq("aaaa".getBytes()));
+		verify(chatIHM2, atMost(3000)).updateMessage(eq("aaaa".getBytes()));
+	}
+	
+	
 	@Test
 	public void testAddMessage(){
 		
 		System.out.println("Ajout de 4 messages avec fenï¿½tre de chat fermï¿½e");
-
 
 		messagesModel.setChatActive(false);
 		messagesModel.addMessage(msg1);
@@ -49,7 +112,7 @@ public class TestMessagesModel {
 		assertEquals(3, messagesModel.getModelSize());
 		
 		//----------------------------------------------------------------------
-
+		
 		System.out.println("Ouverture d'une fenï¿½tre de chat");
 		
 		messagesModel.setChatActive(true);
@@ -59,10 +122,11 @@ public class TestMessagesModel {
 		verify(chatIHM1).updateMessage(eq("aaaa".getBytes()));
 		verify(chatIHM1).updateMessage(eq("bbbb".getBytes()));
 		verify(chatIHM1).updateMessage(eq("cccc".getBytes()));
+		//verify(chatIHM1, times(3)).updateMessage(any());
 		
 		//----------------------------------------------------------------------
 		
-		System.out.println("Ajout de 2 messages avec fenêtre de chat ouverte");
+		System.out.println("Ajout de 2 messages avec fenï¿½tre de chat ouverte");
 
 		messagesModel.addMessage(msg4);
 		messagesModel.addMessage(msg5);
@@ -74,7 +138,6 @@ public class TestMessagesModel {
 		//----------------------------------------------------------------------
 		
 		System.out.println("Ajout d'un nouvel ObserverMessages sur le modï¿½le");
-
 		
 		messagesModel.setChatActive(true);
 		messagesModel.addObserver(chatIHM2);
@@ -84,11 +147,11 @@ public class TestMessagesModel {
 		verify(chatIHM2).updateMessage(eq("cccc".getBytes()));
 		verify(chatIHM2).updateMessage(eq("dddd".getBytes()));
 		verify(chatIHM2).updateMessage(eq("eeee".getBytes()));
+		//verify(chatIHM2, times(5)).updateMessage(any());
 		
 		//----------------------------------------------------------------------
 		
 		System.out.println("Ajout de 2 messages avec fenï¿½tre de chat ouverte");
-
 
 		messagesModel.addMessage(msg6);
 		messagesModel.addMessage(msg7);
@@ -99,4 +162,6 @@ public class TestMessagesModel {
 		verify(chatIHM2).updateMessage(eq("ffff".getBytes()));
 		verify(chatIHM2).updateMessage(eq("gggg".getBytes()));
 	}
+	
+	
 }
