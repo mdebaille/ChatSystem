@@ -3,6 +3,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MessageListener extends Thread{
 
@@ -45,7 +47,8 @@ public class MessageListener extends Thread{
 			messagesModel.addMessage(new Message(typeFile, textFileReceived.getBytes().length, textFileReceived.getBytes()));
 			
 			// enregistrement du fichier sur la machine
-			FileOutputStream fos = new FileOutputStream("recu.txt");
+			String currentDateTime = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss").format(LocalDateTime.now());	
+			FileOutputStream fos = new FileOutputStream(chatController.getInfoDest().getPseudo() + "_" + currentDateTime);
 		    BufferedOutputStream bos = new BufferedOutputStream(fos);
 		    bos.write(data, 0, size);
 		    bos.flush();
