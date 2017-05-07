@@ -55,4 +55,12 @@ public class SingleChatController extends ChatController{
 	public Socket getSocketDest(){
 		return socketDest;
 	}
+
+	public void notifyDisconnection() {
+		try {
+			os.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -153,5 +153,9 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		taReceived.append(new String(message) + "\n");
 	}
 	
+	public void close(){
+		this.dispose();
+	}
+	
 	
 }

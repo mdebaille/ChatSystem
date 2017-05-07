@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,6 +34,10 @@ public class MainController implements ObserverListUsers{
 		connected = false;
 		networkManager.sendDisconnect();
 		networkManager.notifyDisconnection();
+		for(Entry<InetAddress, SingleChatController> entry: listChatController.entrySet()){
+			entry.getValue().notifyDisconnection();
+			entry.getValue().closeChat();
+		}
 	}
 
 	public void addChatController(Socket socketDest) {
@@ -62,7 +67,6 @@ public class MainController implements ObserverListUsers{
 
 			ChatController chatController = listChatController.get(ip);
 			ChatIHM cIHM = new ChatIHM(pseudo, dest.getPseudo(), chatController);
-			//chatController.addObservertoModel(cIHM);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -86,9 +90,9 @@ public class MainController implements ObserverListUsers{
 				System.out.println(e.getMessage());
 			} 
 		}
+
 		GroupChatController groupChatController = new GroupChatController(this, listSocket, pseudo);
 		ChatIHM cIHM = new ChatIHM(pseudo, "Group", groupChatController);
-		groupChatController.addObservertoModel(cIHM);
 	}
 
 	public void notifyNewMessage(InetAddress ip) {

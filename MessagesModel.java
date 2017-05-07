@@ -24,6 +24,13 @@ public class MessagesModel implements ObservableMessages {
 		listObserver.remove(obs);
 	}
 	
+	public void removeAllObservers() {
+		for(ObserverMessages obs: listObserver){
+			obs.close();
+		}
+		listObserver.clear();
+	}
+	
 	public void notifyMessage(byte[] message){
 		for(ObserverMessages obs : listObserver){
 			obs.updateMessage(message);
@@ -51,5 +58,4 @@ public class MessagesModel implements ObservableMessages {
 	public int getModelSize() {
 		return listMessages.size();
 	}
-	
 }

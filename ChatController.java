@@ -54,4 +54,7 @@ public abstract class ChatController {
 		messagesModel.removeObserver(chatIHM);
 	}
 
+	public void closeChat(){
+		messagesModel.removeAllObservers();
+	}
 }

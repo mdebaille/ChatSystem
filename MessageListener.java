@@ -29,6 +29,7 @@ public class MessageListener extends Thread{
 				}
 			} catch (IOException e) {
 				System.out.println("Deconnexion du destinataire");
+				chatController.notifyDisconnection();
 				return;
 			}
 		}
@@ -43,11 +44,11 @@ public class MessageListener extends Thread{
 		
 		// si le message contient un fichier on l'enregistre, sinon on affiche le texte du message
 		if(typeFile){
-			String textFileReceived = "File received.";
+			String currentDateTime = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss").format(LocalDateTime.now());	
+			String textFileReceived = "Received " + chatController.getInfoDest().getPseudo() + "_" + currentDateTime + ".";
 			messagesModel.addMessage(new Message(typeFile, textFileReceived.getBytes().length, textFileReceived.getBytes()));
 			
 			// enregistrement du fichier sur la machine
-			String currentDateTime = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss").format(LocalDateTime.now());	
 			FileOutputStream fos = new FileOutputStream(chatController.getInfoDest().getPseudo() + "_" + currentDateTime);
 		    BufferedOutputStream bos = new BufferedOutputStream(fos);
 		    bos.write(data, 0, size);
