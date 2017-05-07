@@ -32,9 +32,14 @@ public abstract class ChatController {
 	
 	public abstract void sendMessage(Message message);
 	
-	public void setChatActive(boolean b){
+	public void setChatActive(boolean b, ChatIHM ci){
 		this.chatActive = b;
 		messagesModel.setChatActive(b);
+		if (b){
+			addObservertoModel(ci);
+		}else{
+			removeObserver(ci);
+		}
 	}
 	
 	public boolean getChatActive(){
@@ -43,6 +48,10 @@ public abstract class ChatController {
 	
 	public void addObservertoModel(ChatIHM chatIHM){
 		messagesModel.addObserver(chatIHM);
+	}
+	
+	public void removeObserver(ChatIHM chatIHM){
+		messagesModel.removeObserver(chatIHM);
 	}
 
 }

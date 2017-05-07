@@ -41,9 +41,7 @@ public class MessagesModel implements ObservableMessages {
 	
 	public void addMessage(Message message){
 		listMessages.add(message);
-		if(chatActive){
-			notifyMessage(message.getData());
-		}
+		notifyMessage(message.getData());
 	}
 	
 	public void setChatActive(boolean b){

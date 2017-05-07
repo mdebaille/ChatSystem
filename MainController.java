@@ -18,18 +18,6 @@ public class MainController implements ObserverListUsers{
 
 	boolean connected = false;
 
-	/*
-	 * // pour testComm(), pas du tout important, a supprimer plus tard static
-	 * String addressDest; static int portServerDest; static int myPortServer;
-	 * 
-	 * public static void main(String[] args) { if(args.length >= 2){
-	 * portServerDest = Integer.parseInt(args[0]); myPortServer =
-	 * Integer.parseInt(args[1]); } try { addressDest =
-	 * InetAddress.getLocalHost().getHostName(); } catch (UnknownHostException
-	 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
-	 * MainController mainController = new MainController(); }
-	 */
-
 	public MainController(UsersModel um){
 		this.um = um;
 	}
@@ -74,7 +62,7 @@ public class MainController implements ObserverListUsers{
 
 			ChatController chatController = listChatController.get(ip);
 			ChatIHM cIHM = new ChatIHM(pseudo, dest.getPseudo(), chatController);
-			chatController.addObservertoModel(cIHM);
+			//chatController.addObservertoModel(cIHM);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -110,15 +98,7 @@ public class MainController implements ObserverListUsers{
 	public UsersModel getUsersModel() {
 		return this.um;
 	}
-
 	/*
-	 * public void testComm(){ try{ //mon ip: "192.168.0.27", autre machine:
-	 * "192.168.0.25" InetAddress ipDest = InetAddress.getByName(addressDest);
-	 * int portDest = portServerDest; um.addUser(new InfoUser("Test", ipDest,
-	 * portDest)); }catch(IOException e){ System.out.println(e.getMessage()); }
-	 * }
-	 */
-
 	public void testIHM() {
 		String pseudo;
 		InetAddress IP;
@@ -162,7 +142,7 @@ public class MainController implements ObserverListUsers{
 		};
 		timer.schedule(task1, 2000, 2000);
 		timer.schedule(task2, 6000, 2000);
-	}
+	}*/
 	
 	public void addUser(InfoUser info){}
 	public void removeUser(InetAddress ip){

@@ -45,7 +45,7 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		this.chatController = chatController;
 		
 		initComponents();
-		chatController.setChatActive(true);
+		chatController.setChatActive(true, this);
 	}
 
 	private void initComponents(){
@@ -123,7 +123,7 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		// actionPerfomed du bouton de fermeture de la fenetre
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		       chatController.setChatActive(false);
+		       chatController.setChatActive(false, ChatIHM.this);
 		    }
 		});
 	}

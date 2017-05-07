@@ -1,15 +1,8 @@
 import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-
-
-import static org.mockito.Mockito.*;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
