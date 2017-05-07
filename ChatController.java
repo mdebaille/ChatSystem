@@ -1,43 +1,35 @@
 
 /*
- * envoie des messages quand bouton send cliquÃ©
- * affichage des messages reÃ§u (listener en lien avec ChatSystem)
- *  
- *  Au moment du clic sur un pseudo de la liste dans MainIHM, appel d'une methode de Chatsystem pour:
- *  => creer et ouvrir une ChatIHM
- *  => creer le socket qui permet de passer le accept() du destinataire, seulement si le ChatController associe à¡£e destinataire n'existe pas deja
- *     (c'est a dire premiere connexion)
- *   		Socket socket = new Socket(ipDest, portDest);
- *   		chatSystem.addChannel(socket);
- *     Ou bien creaton du socket direct apres ajout du user dans la liste ???
- *     
- *  ListenSocket n'est pas utile car ChatController est lui më®¥ le BufferedReader et le thread de ListenSocket sera en realite ChatIHM
- *  
+ * Cette classe représente le contrôleur du MVC avec la classe MessageModel et la fenetre d'un chat
  */
 
 public abstract class ChatController {
 
 	protected MainController mainController;
 	protected String myPseudo;
-	protected boolean chatActive;					// indique si la fenetre de chat est ouverte ou non
+	// indique si la fenetre de chat est ouverte ou non
+	protected boolean chatActive;					
 	protected MessagesModel messagesModel;
 	
-	// construit un ChatController pour un chat entre 2 utilisateurs 
 	public ChatController(MainController mainController, String myPseudo){
 			this.mainController = mainController;
 			this.myPseudo = myPseudo;
 			this.chatActive = false;
+			// Création du modèle quand le contrôleur est créé
 			this.messagesModel = new MessagesModel();
 	}
 	
+	// Méthode qui varie selon si on envoie un message à un ou plusieurs utilisateurs
 	public abstract void sendMessage(Message message);
 	
 	public void setChatActive(boolean b, ChatIHM ci){
 		this.chatActive = b;
 		messagesModel.setChatActive(b);
 		if (b){
+			// si la fenêtre de chat s'ouvre on l'ajoute comme observer du modèle
 			addObservertoModel(ci);
 		}else{
+			// si la fenêtre de chat se ferme on l'enlève de la liste des observers du modèle
 			removeObserver(ci);
 		}
 	}

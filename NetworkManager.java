@@ -5,6 +5,10 @@ import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/*
+ * Classe qui gère ce qui concerne le réseau et créant les différents threads
+ */
+
 public class NetworkManager {
 
 	private String myPseudo;
@@ -52,6 +56,7 @@ public class NetworkManager {
 		this.mainController.addChatController(socketDest);
 	}
 	
+	// envoi d'un message pour notifier la déconnexion aux autres utilisateurs
 	public void sendDisconnect(){
 		try{
 			MessageUser mess = new MessageUser(myPseudo, myIP, portServSocket, MessageUser.typeConnect.DISCONNECTED);

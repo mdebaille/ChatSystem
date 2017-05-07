@@ -3,9 +3,12 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/*
+ * Classe représentant les messages qui sont envoyés sur le réseau pour notifier q'un utilisateur est connecté ou qu'il se déconnecte
+ */
+
 public class MessageUser implements Serializable {
 	
-
 	private  String pseudo;
 	private  InetAddress IP;
 	private  int port;
@@ -60,10 +63,6 @@ public class MessageUser implements Serializable {
 			}else{
 				etat = MessageUser.typeConnect.DISCONNECTED;
 			}
-			/*System.out.println("Pseudo: " + champs[0]);
-			System.out.println("IP: " + champs[1]);
-			System.out.println("Port: " + champs[2]);
-			System.out.println("Etat: " + champs[3]);*/
 			return new MessageUser(champs[0], InetAddress.getByName(champs[1]), Integer.parseInt(champs[2]), etat);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();

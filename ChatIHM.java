@@ -13,19 +13,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 /*
- * FenÃªtre pour communiquer avec un utilisateur
- * a l'ouverture de la fenetre de chat => lancer la lecture des messages recus (messages recus pendant que chatIHM etait fermee, 
- * et messages qui vont etre recus) => lecture depuis le bufferedreader de chatcontroller avec getLastLine()
- *   Genre:
- *   	String lastline;
- *   	while(true){		 
- *   		lastline = chatController.getLastLine(); // getLastLine() bloque tant qu'il n'y a pas de nouveau message ï¿½ lire
- *   		afficher_le_msg_dans_IHM(lastline); 
- *   	}
- *   (quick note: Tel quel, si on ferme la fenetre de chat et qu'on la re-ouvre plus tard, le chat ne se rappellera pas des messages
- *   qui ont ete affiches avant la fermeture, on re-ouvre une chatIHM vierge ï¿½ chaque fois. Il y aurait possibilite d'ajouter
- *   une memoire de messages ï¿½ chaque chatcontroller pour pouvoir suivre les conversations en entier meme apres fermeture des chatIHM.)
- *   
+ * Classe qui représente la vue du MVC avec MessageModel et ChatController
+ * Fenetre pour communiquer avec un  ou plusieurs utilisateurs  
  */
 
 public class ChatIHM extends JFrame implements ObserverMessages{
@@ -39,12 +28,12 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 	ChatController chatController;
 	
 	public ChatIHM(String myPseudo, final String destPseudo, final ChatController chatController){
-		System.out.println("crï¿½ation du chatIHM");
+		System.out.println("création du chatIHM");
 		this.myPseudo = myPseudo;
 		this.destPseudo = destPseudo;
 		this.chatController = chatController;
-		
 		initComponents();
+		// on notifie le contrôleur que la fenêtre de chat à été ouverte
 		chatController.setChatActive(true, this);
 	}
 
@@ -52,6 +41,7 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		this.setTitle("Chat with " + destPseudo);
 		this.setPreferredSize(new Dimension(700,700));
 		
+		// Zone d'affichage des messages envoyés et reçus
 		JPanel pReceived = new JPanel();
 		pReceived.setBorder(new EmptyBorder(10,10,10,10));
 		taReceived = new JTextArea(30,50);
@@ -59,12 +49,13 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		pReceived.add(taReceived);
 		JScrollPane scrollReceived = new JScrollPane(pReceived, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 	            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
+		// Zone pour envoyer des messages
 		JPanel pSend = new JPanel();
 		pSend.setLayout(new GridBagLayout());
 		scrollReceived.setBorder(new EmptyBorder(10,10,10,10));
 		
-
-		
+		// Zone de texte où saisir le message à envoyer
 		GridBagConstraints cTA = new GridBagConstraints();
 		taSend = new JTextArea(3,50);
 		JScrollPane scrollSend = new JScrollPane(taSend, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -73,6 +64,7 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		cTA.gridy = 0;
 		cTA.fill = GridBagConstraints.VERTICAL;
 		
+		// Bouton pour envoyer un message
 		GridBagConstraints cB = new GridBagConstraints();
 		JButton bSend = new JButton("Send");
 		cB.gridx = 1;
@@ -80,6 +72,7 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		cB.weightx = 0.1;
 		cB.fill = GridBagConstraints.VERTICAL;
 		
+		// Bouton pour envoyer un fichier
 		GridBagConstraints cF = new GridBagConstraints();
 		JButton bFile = new JButton("File");
 		cF.gridx = 2;
@@ -91,19 +84,21 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		pSend.add(bSend, cB);
 		pSend.add(bFile, cF);
 	
-		
+		// Listener sur le bouton pour envoyer un message
 		bSend.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		clickSend();
 	    	}
 		});
 		
+		// Listener sur le bouton pour envoyer un fichier
 		bFile.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		clickSelectFile();
 	    	}
 		});
 		
+		// Placement des deux zones principales dans la fenêtre
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints cScroll = new GridBagConstraints();
 		cScroll.gridx = 0;
@@ -120,16 +115,19 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		this.pack();
 		this.setVisible(true);
 		
-		// actionPerfomed du bouton de fermeture de la fenetre
+		// Listener sur le bouton de fermeture de la fenetre
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	// on notifie le contrôleur que le fenêtre de chat est maintenant fermée
 		       chatController.setChatActive(false, ChatIHM.this);
 		    }
 		});
 	}
 		
 	public void clickSend(){
+		// Lorsque l'on clique sur le bouton pour envoyer un message, le contrôleur est notifié avec le contenu du texte à envoyer
 		chatController.sendMessage(new Message(false, taSend.getText().length(), taSend.getText().getBytes()));
+		// On efface le contenu de la zone où on saisi les nouveaux messages
 		taSend.setText("");
 	}
 	
@@ -150,6 +148,7 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 	}
 
 	public void updateMessage(byte[] message){
+		// quand un nouveau message est reçu, on l'affiche dans a zone pour afficher les messages
 		taReceived.append(new String(message) + "\n");
 	}
 	

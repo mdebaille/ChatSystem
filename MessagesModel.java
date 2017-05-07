@@ -1,7 +1,11 @@
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+/*
+ * Classe contenant les messages reçus
+ * Elle notifie la fenêtre de communication quand celle-ci est ouverte
+ */
 
 public class MessagesModel implements ObservableMessages {
 	
@@ -38,6 +42,7 @@ public class MessagesModel implements ObservableMessages {
 	}
 	
 	private void recordMessages(){
+		// on notifie les messages qui ont été enregistrés quand le fenêtre de chat n'était pas ouverte
 		while(!chatActive){}
 		Iterator<Message> it = listMessages.iterator();
 		while(it.hasNext()){

@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/*
+ * Thread qui permet de lire un InputStream et de notifier des nouveaux messages
+ */
+
 public class MessageListener extends Thread{
 
 	private DataInputStream is;						// permet de lire les messages recus
@@ -25,6 +29,7 @@ public class MessageListener extends Thread{
 			try {
 				readData();
 				if(!chatController.getChatActive()){
+					// permet de notifier la réception d'un nouveau message en colorant le nom d'utilisateur en vert dans l'IHM principale
 					chatController.notifyNewMessage();
 				}
 			} catch (IOException e) {

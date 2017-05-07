@@ -3,6 +3,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
+/* 
+ * Classe pour l'envoi de message à un seul utilisateur
+ */
+
 public class SingleChatController extends ChatController{
 
 	private Socket socketDest;

@@ -17,11 +17,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 /*
- * notification qd message reÃƒÂ§u d'un certain user
+ * Classe représentant la vue de la liste des utilisateurs connectés
  */
-
-
-
 
 public class MainIHM extends JFrame implements ObserverListUsers {
 	
@@ -59,6 +56,7 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 		
 		this.setTitle("Chat System");
 		
+		// Zone de saisie du pseudo
 		pInputUsername = new JPanel();
 		pInputUsername.setLayout(new BoxLayout(pInputUsername, BoxLayout.X_AXIS));
 		pInputUsername.setBorder(new EmptyBorder(20, 20, 10, 20));	
@@ -68,9 +66,11 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 		pInputUsername.add(lUsername);
 		pInputUsername.add(taUsername);
 		
+		// Affichage d'un message d'erreur
 		pError = new JPanel(new BorderLayout());
 		pError.setBorder(new EmptyBorder(0, 30, 0, 30));
 		
+		// Bouton de connexion
 		pConnect = new JPanel(new BorderLayout());
 		pConnect.setBorder(new EmptyBorder(10, 60, 20, 60));
 		JButton bConnect = new JButton("Connect");
@@ -86,6 +86,7 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 		this.setVisible(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
+		// Listener sur le bouton de connexion
 		bConnect.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		clickConnect();
@@ -93,11 +94,12 @@ public class MainIHM extends JFrame implements ObserverListUsers {
 	    });
 	}
 	
-	
+// Méthode appelée quand l'utilisateur a cliqué sur le bouton de coonexion	
 private void changeFrameConnection(){
 		
 		this.setVisible(false);
 
+		// pseudo de l'utilisateur actuel
 		GridBagConstraints cUsername = new GridBagConstraints();
 		cUsername.gridx = 0;
 		cUsername.gridy = 0;
@@ -106,6 +108,7 @@ private void changeFrameConnection(){
 		lMyUsername.setForeground(Color.MAGENTA);
 		lMyUsername.setBorder(new EmptyBorder(20,20,20,20));
 
+		// Liste des utilisateurs connectés
 		GridBagConstraints cList = new GridBagConstraints();
 		cList.gridx = 0;
 		cList.gridy = 1;
@@ -115,6 +118,7 @@ private void changeFrameConnection(){
 		scrollList = new JScrollPane(pList);
 		scrollList.setPreferredSize(new Dimension(100,200));
 		
+		// Bouton pour envoyer à un groupe
 		GridBagConstraints cGroup = new GridBagConstraints();
 		cGroup.gridx = 0;
 		cGroup.gridy = 2;
@@ -125,6 +129,7 @@ private void changeFrameConnection(){
 		bSendGroup.setEnabled(false);
 		pSendGroup.add(bSendGroup, BorderLayout.CENTER);
 		
+		// Bouton de déconnexion
 		GridBagConstraints cDisconnect = new GridBagConstraints();
 		cDisconnect.gridx = 0;
 		cDisconnect.gridy = 3;
@@ -133,9 +138,6 @@ private void changeFrameConnection(){
 		pDisconnect.setBorder(new EmptyBorder(10, 60, 20, 60));
 		JButton bDisconnect = new JButton("Disconnect");
 		pDisconnect.add(bDisconnect, BorderLayout.CENTER);
-		
-		
-		
 		
 		this.remove(pInputUsername);
 		this.remove(pConnect);
@@ -150,12 +152,14 @@ private void changeFrameConnection(){
 		this.pack();
 		this.setVisible(true);
 		
+		// Listener sur le bouton de déconnexion
 		bDisconnect.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		clickDisconnect();
 	    	}
 	    });
 		
+		// Listener sur le bouton d'envoi à un groupe d'utilisateurs
 		bSendGroup.addActionListener(new ActionListener(){
 	    	public void actionPerformed(ActionEvent e){
 	    		clickSendGroup();
@@ -163,6 +167,7 @@ private void changeFrameConnection(){
 	    });
 	}
 
+	// Méthode appelée qaund l'utilsateur a cliqué sur le bouton de déconnexion
 	private void changeFrameDisconnection(){
 		this.remove(lMyUsername);
 		this.remove(scrollList);
@@ -171,26 +176,31 @@ private void changeFrameConnection(){
 		initComponents();
 	}
 	
+	// Méthode appelée quand un utilisateur est ajouté à la liste des utilsateurs connectés
 	public void addUser(InfoUser info){
-		JPanel pUser = new JPanel(new FlowLayout());
 		
+		// Création d'un nouveau composant à ajouter à la liste
+		JPanel pUser = new JPanel(new FlowLayout());
+		// Checkbox permettant de sélectionner un utilisateur pour l'ajouter à la liste des utilisateurs pour envoyer un message à un groupe
 		JCheckBox cb = new JCheckBox();
+		// Listener sur la checkbox
 		cb.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent e){
 	    		selectUser(e);
 	    	}
 		});
-		
+		// Bouton avec le nom du nouvel utilisateur
 		JButton bName = new JButton(info.getPseudo());
 		bName.setBackground(Color.white);
 		
-		//Seule methode que j'ai trouve pour associer au bouton d'un user son adresse ip (sans l'afficher)
-		//Cette adresse ip sert Ã  identifier de maniere unique le user qu'on selectionne pour se connecter a ce user la et pas un autre
+		//Label caché associé au bouton pour connaître l'adresse IP de l'utilisateur correspondant au bouton :
+		//Cette adresse ip sert à identifier de maniere unique l'utilisateur qu'on selectionne pour se connecter a ce user la et pas un autre
 		//Sinon il y a risque de creer un chatcontroller associe a un user possedant le meme pseudo (si on se base uniquement sur le pseudo)
 		JLabel hiddenIP = new JLabel(info.getIP().getHostAddress()); 
 		hiddenIP.setVisible(false);
 		bName.add(hiddenIP);
 		
+		// Listener sur le bouton correspondant au nouvel utilisateur
 		bName.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				JButton button = (JButton)e.getSource();
@@ -208,9 +218,11 @@ private void changeFrameConnection(){
 		pList.repaint();
 	}
 	
+	// Méthode appelée quand un utilisateur est enlevé de la liste des utilisateurs connectés
 	public void removeUser(InetAddress ip){
 		nbUsers--;
 		pList.setLayout(new GridLayout(nbUsers,1));
+		// on cherche l'utilisateur dans la liste grâce à son adresse IP
 		for (int i=0; i<pList.getComponentCount(); i++){
 			JPanel p = (JPanel)pList.getComponent(i);
 			JButton b = (JButton)p.getComponent(1);
@@ -229,15 +241,17 @@ private void changeFrameConnection(){
 		if(myUsername.contains("#") || myUsername.equals("")){
 			JLabel lError = null;
 			if(myUsername.contains("#") ){
-				lError = new JLabel("CaractÃ¨re '#' interdit");
+				// on interdit la caractère # car il est utilisé pour la sérialisation des messages
+				lError = new JLabel("Caractère '#' interdit");
 			} else{
+				// on interdit les pseudos vides
 				lError = new JLabel("Erreur : pseudo vide");
 			}
 			lError.setForeground(Color.red);
+			// on affiche un message d'erreur si le pseudo saisi n'est pas valide
 			pError.add(lError, BorderLayout.CENTER);
 			pError.revalidate();
 			pError.repaint();
-			
 		}
 		else{
 			changeFrameConnection();
@@ -256,23 +270,33 @@ private void changeFrameConnection(){
 	
 	private void clickUser(JButton b){
 		JLabel labelIP = (JLabel)b.getComponent(0);
+		// une fenêtre pour communiquer avec l'utilisateur est ouverte
 		mainController.openChat(labelIP.getText());
+		// si le bouton était vert car un nouveau message était reçu, on remet sa couleur normale
 		if(b.getBackground().equals(Color.decode("#99ff66"))){
 			b.setBackground(Color.white);
 		}
 	}
 	
+	// Méthode appelée quand on sélectionne un utilisateur pour pouvoir l'ajouter à liste pour un envoi de message à un groupe
 	private void selectUser(ItemEvent e){
+		
+		// on récupère l'IP qui correspond à cette utilisateur
 		JComponent cb = (JComponent) e.getSource();
 		Container panel = cb.getParent();
 		JButton b = (JButton) panel.getComponent(1);
 		JLabel labelIP = (JLabel) b.getComponent(0);
+		
+		// si on déselectionne, on enlève l'utilisateur de la liste du groupe
+		// et si c'était le seul utilisateur sélectionné pour l'nvoi à un group, on désactive le bouton pour l'envoi à un groupe
 		if (e.getStateChange() == ItemEvent.DESELECTED){
 			if(listGroup.size() == 1){
 				bSendGroup.setEnabled(false);
 			}
 			listGroup.remove(labelIP.getText());
 			System.out.println("Suppression de l'ip " + labelIP.getText() + " dans le  groupe");
+		// si on sélectionne, on ajoute l'utilisateur à liste du groupe
+		// et si c'est le premier utilisateur de la liste, on active le bouton d'envoi à un groupe
 		}else{
 			if (listGroup.size() == 0){
 				bSendGroup.setEnabled(true);
@@ -282,11 +306,13 @@ private void changeFrameConnection(){
 		}
 	}
 	
+	// // méthode appelée quand on reçoit un nouveau message d'un utilisateur avec lequel nous n'avons de fenêtre ouverte pour communiquer
 	public void newMessage(InetAddress ip){
 		for (int i=0; i<pList.getComponentCount(); i++){
 			JComponent c = (JComponent)pList.getComponent(i);
 			JButton b = (JButton)c.getComponent(1);
 			JLabel lIp = (JLabel) b.getComponent(0);
+			// si un nouveau message n'a pas déjà été notifié, on change la couleur du bouton
 			if(lIp.getText().equals(ip.getHostAddress()) && b.getBackground().equals(Color.white)){
 				b.setBackground(Color.decode("#99ff66"));
 			}
