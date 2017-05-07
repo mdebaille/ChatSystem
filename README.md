@@ -38,6 +38,7 @@ l'utilisateur associé de la liste des utilisateurs.
 
 Initialement, la liste des utilisateurs est vide
 Cas de tests:
+
 	- Réception d'un message de connexion d'un utilisateur 1
 		Résultat: la liste contient 1 utilisateur et l'utilisateur ajouté est l'émetteur du MessageUser => OK
 	- Réception d'un message de connexion d'un utilisateur 2
@@ -61,6 +62,7 @@ de leur part en l'espace de 6s.
 	
 Initialement, la liste des utilisateurs est vide
 Cas de tests:
+
 	- Attente de 6s après réception d'un message de connexion d'un utilisateur 1, la liste contient donc un utilisateur
 		Résultat: la liste contient 1 utilisateur => OK
 	- Attente de 6s après réception de 3 messages de connexion d'un utilisateur 2
@@ -75,6 +77,7 @@ addMessage() sauvegarde un message dans l'historique des messages envoyés/reçu
 	
 Initialement, la liste de messages est vide, aucun objet n'observe le modèle (pas de fenêtre de chat ouverte)
 Cas de tests:
+
 	- Ajout de 3 messages
 		Résultat: la liste contient 3 messages => OK
 	- Ajout d'un observateur: ouverture d'une fenêtre de chat
@@ -99,6 +102,7 @@ MulticastListener est le thread qui écoute le réseau et gère la réception de
 	
 Initialement, la liste des utilisateurs est vide et le thread écoute le port multicast
 Cas de tests:
+
 	- Envoi d'un paquet de connexion: Pseudo 1
 		Résultat: la liste contient 1 utilisateur => OK
 	- Envoi d'un paquet de connexion: Pseudo 2
