@@ -32,12 +32,12 @@ Rapport de tests:
 Test UsersModel
 
 - testReceivedMessageUser()
+
 receivedMessageUser() est appelée par l'instance de MulticastListener dès qu'elle reçoit un MessageUser provenant du réseau.
 Selon le type de message reçu (connexion ou déconnexion), la méthode receivedMessageUser() doit ajouter ou supprimer 
 l'utilisateur associé de la liste des utilisateurs.
 
 Initialement, la liste des utilisateurs est vide
-Cas de tests:
 
 	- Réception d'un message de connexion d'un utilisateur 1
 		Résultat: la liste contient 1 utilisateur et l'utilisateur ajouté est l'émetteur du MessageUser => OK
@@ -57,11 +57,11 @@ Cas de tests:
 		Résultat: rien ne se passe => OK
 
 - testUpdateList()
+
 Cette méthode teste le thread permettant de supprimer des utilisateurs de la liste si on ne reçoit pas de MessageUser de connexion
 de leur part en l'espace de 6s.
 	
 Initialement, la liste des utilisateurs est vide
-Cas de tests:
 
 	- Attente de 6s après réception d'un message de connexion d'un utilisateur 1, la liste contient donc un utilisateur
 		Résultat: la liste contient 1 utilisateur => OK
@@ -73,10 +73,10 @@ Cas de tests:
 Test MessagesModel
 
 - testAddMessage()
+
 addMessage() sauvegarde un message dans l'historique des messages envoyés/reçus d'un chat, cette méthode du modèle doit notifier les potentiels observateurs de MessagesModel (ChatIHM) d'un nouveau message afin qu'ils puissent l'afficher. De plus, à chaque création d'un observateur, celui-ci doit récupérer tous les messages de la liste et les afficher.
 	
 Initialement, la liste de messages est vide, aucun objet n'observe le modèle (pas de fenêtre de chat ouverte)
-Cas de tests:
 
 	- Ajout de 3 messages
 		Résultat: la liste contient 3 messages => OK
@@ -93,15 +93,16 @@ Les messages sont bien récupérés et affichés dans le bon ordre par les obser
 être affiché".
 	
 - testAdd1000Messages()
+
 Test pour vérifier que le comportement du modèle ne change pas selon sa charge en messages. Ce test reprend exactement les mêmes cas que testAddMessage() mais 1000 messages sont ajoutés au modèle au lieu de 2 ou 3. Les résultats attendus sont corrects, l'ajout de 1000 messages entraîne l'affichage de 1000 messages par les observateurs et la liste se remplit en conséquence.
 	
 Test MulticastListener
 
 - testMulticastListener()
+
 MulticastListener est le thread qui écoute le réseau et gère la réception des MessageUser, il notifie UsersModel avec les messages reçus. On vérifie ici que les messages sont bien reçus et que leurs champs sont bien désérialisés par le thread.
 	
 Initialement, la liste des utilisateurs est vide et le thread écoute le port multicast
-Cas de tests:
 
 	- Envoi d'un paquet de connexion: Pseudo 1
 		Résultat: la liste contient 1 utilisateur => OK
