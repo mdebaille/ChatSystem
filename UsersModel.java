@@ -8,16 +8,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-/*
- * envoie des message user toutes les 2s
- * Met Ã  jour sa liste de user et quand mise Ã  jour -> ajouter dans liste de IHM principale (appel de addUser et removeUser)
+/* 
+ * Classe gérant la liste des utilisateurs connectés et notifiant MainIHM et MainController d'un changement dans cette liste
  */
 
 public class UsersModel implements ObservableListUsers{
-	
+	// délai au bout duquel on supprime un utilisateur si on n'a plus reçu de message de connexion de sa part
 	final int refreshDelay = 6000; //6s
 	HashMap<InetAddress, InfoUser> listUser;
+	// Liste des compteurs permettant de supprimer les utilisateurs quand on n'a plus reçu de message de connexion de leur part
 	ConcurrentHashMap<InetAddress, Integer> listCompteurs;
 	Timer timer;
 	private ArrayList<ObserverListUsers> listObserver;
@@ -27,15 +26,19 @@ public class UsersModel implements ObservableListUsers{
 		listCompteurs = new ConcurrentHashMap<InetAddress, Integer>();
 		listObserver = new ArrayList<ObserverListUsers>();
 		
+		// Gestion de la suppression des utilisateurs quand ils n'envoient plus de messages de connexion
 		TimerTask update = new TimerTask() {
             public void run() {
             	Iterator<Entry<InetAddress,Integer>> it = listCompteurs.entrySet().iterator();
             	while(it.hasNext()) {
             	      Entry<InetAddress,Integer> entry = it.next();
+            	      // si on n'a pas reçu de message de connexion de leur part depuis la dernière exécution de ce thread
             	      if(entry.getValue() == 0) {
+            	    	  // on supprime l'utilisateur de la liste
             	    	  notifyRemoveUser(entry.getKey());
             	    	  it.remove();
             	      }else{
+            	    	 // sinon on remet le nombre de messages reçus à zéro
               			listCompteurs.put(entry.getKey(), 0);
               		}
             	}
@@ -52,13 +55,16 @@ public class UsersModel implements ObservableListUsers{
 	
 	public void receivedMessageUser(final MessageUser mess){
 		try {
+			// on ne prend en compte les messages que l'on a soit même émis
 			if(!mess.getIP().equals(InetAddress.getLocalHost())){
 				if(mess.getEtat() == MessageUser.typeConnect.CONNECTED){
 					if(!existInList(mess.getIP())){
+						// ajout d'un nouvel utilisateur si il n'était pas présent dans la liste
 						InfoUser info = new InfoUser(mess.getPseudo(), mess.getIP(), mess.getPort());
 						notifyNewUser(info);
 						listCompteurs.put(mess.getIP(), 1);
 					}else{
+						// sinon incrémentation du nombre de messages reçus
 			        	listCompteurs.put(mess.getIP(), listCompteurs.get(mess.getIP())+1);
 					}
 				}else{
