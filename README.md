@@ -115,5 +115,33 @@ Initialement, la liste des utilisateurs est vide et le thread écoute le port mu
 	- Envoi de 1000 paquets de connexions différentes
 		Résultat: la liste contient 1000 utilisateurs => OK
 	
-		
+Test MessageListener
+
+- testReadData()
+
+MessageListener est un thread associé à un SingleChatController qui écoute le réseau et gère la réception des Message sérialisés. Les messages reçus sont enregistrés dans le modèle et les fichiers sont enregistrés sur la machine.
+
+Initialement, le modèle est vide et on simule une connexion afin que MessageListener puisse écouter un port sur lequel on va envoyer des messages. Une instance de ChatIHM observe le modèle. L'utilisateur qui envoie les messages a pour pseudo "PseudoEmetteur".
+
+	- Envoi d'un message texte [false, 4, "aaaa"]
+		Résultat: la liste contient 1 message, l'observateur affiche le message "PseudoEmetteur: aaaa" => OK
+	- Envoi d'un message texte [false, 4, "bbbb"]
+		Résultat: la liste contient 2 messages, l'observateur affiche le message "PseudoEmetteur: bbbb" => OK
+	- Envoi d'un message fichier [true, 18, "je suis un fichier"]
+		Résultat: la liste contient 3 messages, l'observateur affiche le message "Received PseudoEmetteur_yyyy_MM_dd_HH_mm_ss."
+		"yyyy_MM_dd_HH_mm_ss" est la date et l'heure à laquelle le message est reçu => OK
+
+- testReadDataError()
+
+Ce test permet d'observer le comportement de MessageListener lorsque le thread reçoit un message erroné.
+
+	- Envoi d'un message texte [false, 4, "aaaa"]
+		Résultat: la liste contient 1 message, l'observateur affiche le message "PseudoEmetteur: aaaa" => OK
+	- Envoi d'un message erroné [false, 4, "cccccccccc"]
+		Résultat: la liste contient 2 messages, l'observateur affiche le message "Pseud- oEmetteur: cccc"
+			  MessageListener lève l'exception java.lang.OutOfMemoryError => ERREUR
+	- Envoi d'un message texte [false, 4, "bbbb"]
+		Résultat: la liste contient 2 messages => ERREUR
 	
+	
+			 
