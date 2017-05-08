@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +48,8 @@ public class TestMessageListener {
 		
 			//----Simulation de connexion----
 			
-			ConnexionListener connexionListener = new ConnexionListener(new ServerSocket(49150));
+			ServerSocket serverSocket = new ServerSocket(49150);
+			ConnexionListener connexionListener = new ConnexionListener(serverSocket);
 			connexionListener.start();
 			
 			Thread.sleep(1000);
@@ -102,9 +105,12 @@ public class TestMessageListener {
 			System.out.println("Envoi d'un message fichier");
 			
 			sendMessage(msgFile);
+			String currentDateTime = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss").format(LocalDateTime.now());	
+			String textFileReceived = "Received " + chatControllerDest.getInfoDest().getPseudo() + "_" + currentDateTime + ".";
 			Thread.sleep(1000);
+			
 			assertEquals(3, messagesModel.getModelSize());
-			verify(chatIHM).updateMessage(eq("File received.".getBytes()));
+			verify(chatIHM).updateMessage(eq(textFileReceived.getBytes()));
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -112,7 +118,7 @@ public class TestMessageListener {
 		
 	}
 	
-	@Test(expected = java.lang.OutOfMemoryError.class)
+	@Test
 	public void testReadDataError(){
 		try {
 			System.out.println("---Test readData() erreur---");
@@ -140,8 +146,10 @@ public class TestMessageListener {
 			
 			System.out.println("Envoi d'un message texte");
 			
-			sendMessage(msg1);
+			sendMessage(msg2);
 			Thread.sleep(1000);
+			assertEquals(3, messagesModel.getModelSize());
+			verify(chatIHM).updateMessage(eq("PseudoEmetteur: bbbb".getBytes()));
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
