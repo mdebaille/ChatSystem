@@ -1,9 +1,10 @@
 # ChatSystem
 
-Version Java requise: 1.<version de l'INSA>
+Version Java requise: 1.7
 
 Comment compiler et exécuter le projet:
-[...]
+Pour compiler, il faut ajouter hamcrest-core-1.3.jar et junit-4.12.jar.
+Pour exécuter le projet, il faut lancer le main situé dans la classe Main. Les tests JUnit peuvent être executés en tant que tel ou on peut exécuter la classe TestRunner en précisant le nom de la classe de test.
 
 
 Fonctionnalités implémentées:
