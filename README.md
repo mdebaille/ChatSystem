@@ -139,13 +139,13 @@ Ce test permet d'observer le comportement de MessageListener lorsque le thread r
 
 	- Envoi d'un message texte [false, 4, "aaaa"]
 		Résultat: la liste contient 1 message, l'observateur affiche le message "PseudoEmetteur: aaaa" => OK
-	- Envoi d'un message erroné [false, 4, "cccccccccc"]
+	- Envoi d'un message erroné [false, 4, "cccccccccc"], la taille indiquée ne correspond pas à la taille effective du message
 		Résultat: la liste contient 2 messages, l'observateur affiche le message "Pseud- oEmetteur: cccc"
 			  MessageListener lève l'exception java.lang.OutOfMemoryError => ERREUR
 	- Envoi d'un message texte [false, 4, "bbbb"]
 		Résultat: la liste contient 2 messages => ERREUR
 	
-Un test a été réalisé sur l'envoi de fichiers plus spécifiquement.
+Un test a été réalisé sur l'envoi de fichiers plus spécifiquement (hors JUnit).
 
 	- Envoi d'une image de 3Ko
 		Résultat: la liste contient 1 message, l'observateur affiche le message "Received PseudoEmetteur_yyyy_MM_dd_HH_mm_ss."
