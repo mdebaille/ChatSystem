@@ -136,14 +136,16 @@ public class ChatIHM extends JFrame implements ObserverMessages{
 		final JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(this);
 	    
-		// copie du fichier dans un tableau d'octet et envoi
-	    try {
-	    	byte[] fileData = new byte[(int) fc.getSelectedFile().length()];
-	        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fc.getSelectedFile()));
-			bis.read(fileData, 0, fileData.length);
-			chatController.sendMessage(new Message(true, fileData.length, fileData));
-	    } catch (IOException e) {	
-			e.printStackTrace();
+		if(fc.getSelectedFile() != null){
+			// copie du fichier dans un tableau d'octet et envoi
+		    try {
+		    	byte[] fileData = new byte[(int) fc.getSelectedFile().length()];
+		        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fc.getSelectedFile()));
+				bis.read(fileData, 0, fileData.length);
+				chatController.sendMessage(new Message(true, fileData.length, fileData));
+		    } catch (IOException e) {	
+				e.printStackTrace();
+			}
 		}
 	}
 
