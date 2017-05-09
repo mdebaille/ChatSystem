@@ -145,5 +145,16 @@ Ce test permet d'observer le comportement de MessageListener lorsque le thread r
 	- Envoi d'un message texte [false, 4, "bbbb"]
 		Résultat: la liste contient 2 messages => ERREUR
 	
+Un test a été réalisé sur l'envoi de fichiers plus spécifiquement.
+
+	- Envoi d'une image de 3Ko
+		Résultat: la liste contient 1 message, l'observateur affiche le message "Received PseudoEmetteur_yyyy_MM_dd_HH_mm_ss."
+		L'image enregistrée sur la machine est l'image envoyée => OK
+	- Envoi d'une image de 28Ko
+		Résultat: la liste contient 2 messages, l'observateur affiche le message "Received PseudoEmetteur_yyyy_MM_dd_HH_mm_ss."
+		L'image enregistrée sur la machine est l'image envoyée => OK
+	- Envoi d'une image de 160Ko
+		Résultat: MessageListener lève l'exception java.lang.NegativeArraySizeException
+		On ne peut pas ouvrir le fichier enregistré => ERREUR
 	
 			 
