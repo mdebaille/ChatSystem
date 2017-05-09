@@ -1,5 +1,8 @@
 # ChatSystem
 
+DEBAILLEUX Margaux
+ZAMAR Alexis
+
 Version Java requise: 1.7
 
 Comment compiler et exécuter le projet:
